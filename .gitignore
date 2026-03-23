@@ -11,6 +11,14 @@
 **/.nuxt/
 **/.out/
 
+# C# / .NET build artifacts
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+*.csproj.user
+
 # Environment variables
 .env
 .env.local
