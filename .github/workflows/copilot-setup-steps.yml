@@ -1,109 +1,83 @@
-# =============================================================================
-# GitHub Copilot Coding Agent - Pre-install Setup Workflow
-# =============================================================================
-#
-# PURPOSE:
-#   This workflow pre-installs all dependencies needed by the GitHub Copilot
-#   Coding Agent before it starts working on tasks in this repository.
-#
-# WHY THIS MATTERS:
-#   When GitHub Copilot's Coding Agent picks up a task (e.g. fixing a bug,
-#   implementing a feature, or running tests), it spins up a fresh cloud
-#   environment. Without this file, the agent would have to install all
-#   dependencies from scratch on every run — which is slow and can fail.
-#
-#   By defining `copilot-setup-steps`, we tell GitHub exactly what to
-#   pre-install so the agent's environment is ready to go immediately:
-#     - .NET 9 SDK         → to build and run the ASP.NET Core C# backend
-#     - Node.js 20         → to build and run the React TypeScript frontend
-#     - Frontend npm deps  → react, typescript, testing-library, playwright
-#     - Backend npm deps   → ts-node, jest, supertest (legacy Node backend)
-#     - .NET NuGet deps    → Microsoft.AspNetCore packages for TaskApi
-#     - Playwright browsers → Chromium for e2e tests
-#
-# SIGNIFICANCE FOR THIS PROJECT:
-#   This project has THREE dependency stacks:
-#     1. React/TypeScript frontend  (frontend/package.json)
-#     2. Node.js/Express backend    (backend/package.json) [legacy]
-#     3. ASP.NET Core C# backend    (backend/TaskApi/TaskApi.csproj)
-#
-#   This workflow ensures all three are pre-installed so the Coding Agent
-#   can immediately build, test, and run the full stack without any setup lag.
-#
-# =============================================================================
+# Copilot Coding Agent - Pre-install Setup Steps
+# This workflow pre-installs all dependencies so the Copilot coding agent
+# environment is ready without waiting for installs at runtime.
+# Docs: https://docs.github.com/en/copilot/customizing-copilot/customizing-the-development-environment-for-copilot-coding-agent
 
-name: Copilot Coding Agent - Setup Steps
+name: "Copilot Setup Steps"
 
-on: workflow_dispatch  # Manually triggerable for testing; Copilot uses it automatically
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/copilot-setup-steps.yml"
+      - "frontend/package-lock.json"
+      - "backend/package-lock.json"
+      - "backend/TaskApi/TaskApi.csproj"
 
 jobs:
   copilot-setup-steps:
+    name: "Pre-install Dependencies"
     runs-on: ubuntu-latest
-    # This job name is recognised by GitHub Copilot Coding Agent.
-    # It will run these steps before the agent starts its task.
 
     steps:
-      # -----------------------------------------------------------------------
-      # 1. Checkout the repository
-      # -----------------------------------------------------------------------
+      # ── Checkout ──────────────────────────────────────────────────────────
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # -----------------------------------------------------------------------
-      # 2. Set up .NET 9 SDK (for ASP.NET Core C# backend - TaskApi)
-      # -----------------------------------------------------------------------
-      - name: Set up .NET 9
+      # ── .NET 9 (ASP.NET Core backend) ─────────────────────────────────────
+      - name: Setup .NET 9
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: "9.0.x"
 
-      # -----------------------------------------------------------------------
-      # 3. Set up Node.js 20 (for React frontend + legacy Node backend)
-      # -----------------------------------------------------------------------
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: |
-            frontend/package-lock.json
-            backend/package-lock.json
-
-      # -----------------------------------------------------------------------
-      # 4. Install React TypeScript frontend dependencies
-      #    Includes: react, typescript, testing-library, playwright, MUI
-      # -----------------------------------------------------------------------
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm ci
-
-      # -----------------------------------------------------------------------
-      # 5. Install legacy Node.js backend dependencies
-      #    Includes: express, ts-node, jest, supertest, playwright
-      # -----------------------------------------------------------------------
-      - name: Install backend (Node.js) dependencies
-        working-directory: backend
-        run: npm ci
-
-      # -----------------------------------------------------------------------
-      # 6. Restore .NET NuGet packages (ASP.NET Core TaskApi)
-      #    Downloads Microsoft.AspNetCore and all C# dependencies
-      # -----------------------------------------------------------------------
-      - name: Restore .NET NuGet packages
+      - name: Restore .NET dependencies
         working-directory: backend/TaskApi
         run: dotnet restore
 
-      # -----------------------------------------------------------------------
-      # 7. Build the ASP.NET Core backend to verify it compiles
-      # -----------------------------------------------------------------------
       - name: Build ASP.NET Core backend
         working-directory: backend/TaskApi
         run: dotnet build --no-restore --configuration Release
 
-      # -----------------------------------------------------------------------
-      # 8. Install Playwright browsers (Chromium) for e2e tests
-      #    Both frontend and backend e2e test suites use Playwright
-      # -----------------------------------------------------------------------
-      - name: Install Playwright browsers
+      # ── Node.js (Frontend + Legacy backend) ───────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: |
+            frontend/package-lock.json
+            backend/package-lock.json
+
+      # ── Frontend (React + TypeScript) ─────────────────────────────────────
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      # ── Backend Node (Jest tests & legacy scripts) ─────────────────────────
+      - name: Install backend Node dependencies
+        working-directory: backend
+        run: npm ci
+
+      # ── Playwright Browsers ───────────────────────────────────────────────
+      - name: Install Playwright browsers (frontend)
         working-directory: frontend
         run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright browsers (backend e2e)
+        working-directory: backend
+        run: npx playwright install --with-deps chromium
+
+      # ── Verify setup ──────────────────────────────────────────────────────
+      - name: Verify .NET version
+        run: dotnet --version
+
+      - name: Verify Node version
+        run: node --version
+
+      - name: Verify frontend build
+        working-directory: frontend
+        run: npm run build
+
+      - name: Verify backend .NET build artifacts
+        working-directory: backend/TaskApi
+        run: dotnet build --no-restore --configuration Release --verbosity minimal
