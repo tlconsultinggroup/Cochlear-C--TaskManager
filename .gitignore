@@ -1,0 +1,113 @@
+# Dependencies
+**/node_modules/
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+
+# Build outputs
+**/build/
+**/dist/
+**/.next/
+**/.nuxt/
+**/.out/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.test
+.env.test.local
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*.swn
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.bak
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Playwright Test Results and Reports
+**/test-results/
+**/playwright-report/
+**/playwright/.cache/
+**/.auth/
+
+# Playwright browser downloads (auto-installed browsers)
+**/ms-playwright/
+
+# Test artifacts
+**/screenshots/
+**/videos/
+**/traces/
+**/downloads/
+
+# Temporary test files
+**/test-*.tmp
+**/test-*.log
+
+# Coverage reports (if using with Playwright)
+**/coverage/
+**/lcov-report/
+**.lcov
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Documentation generated files
+PLAYWRIGHT_INTEGRATION_SUMMARY.md
+
+# Local development utilities and convenience scripts
+run-tests.bat
+run-tests.sh
+PLAYWRIGHT_README.md
+
+# Personal development files
+*.local.md
+*-notes.md
+*-scratch.*
+dev-setup.*

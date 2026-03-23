@@ -1,0 +1,279 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+        cache-dependency-path: |
+          frontend/package-lock.json
+          backend/package-lock.json
+
+    # Install backend dependencies
+    - name: Install backend dependencies
+      working-directory: ./backend
+      run: npm ci
+
+    # Install frontend dependencies
+    - name: Install frontend dependencies
+      working-directory: ./frontend
+      run: npm ci
+
+    # Install Playwright browsers
+    - name: Install Playwright Browsers
+      working-directory: ./frontend
+      run: npx playwright install --with-deps
+
+    # Build backend
+    - name: Build backend
+      working-directory: ./backend
+      run: npm run build
+
+    # Run backend tests (Jest)
+    - name: Run backend unit tests
+      working-directory: ./backend
+      run: npm test
+
+    # Run frontend tests (Jest)
+    - name: Run frontend unit tests
+      working-directory: ./frontend
+      run: npm test -- --coverage --watchAll=false
+
+    # Start backend in background - MUST START FIRST
+    - name: Start backend server
+      working-directory: ./backend
+      run: |
+        echo "Starting backend on localhost (127.0.0.1) port 5000..."
+        npm run dev > backend.log 2>&1 &
+        echo $! > backend.pid
+        echo "Backend PID: $(cat backend.pid)"
+      env:
+        NODE_ENV: test
+        HOST: 0.0.0.0  # Bind to all interfaces to ensure localhost accessibility
+
+    # Wait for backend to be fully ready with retry logic
+    - name: Wait for backend
+      run: |
+        echo "Waiting for backend to be ready..."
+        for i in {1..40}; do
+          if curl -f http://localhost:5000/api/tasks 2>/dev/null; then
+            echo "Backend is ready!"
+            # Give backend extra time to be fully initialized
+            sleep 5
+            echo "Backend fully initialized!"
+            exit 0
+          fi
+          echo "Attempt $i: Backend not ready yet, waiting..."
+          sleep 3
+        done
+        echo "Backend failed to start!"
+        cat backend/backend.log || true
+        exit 1
+
+    # Start frontend in background - STARTS AFTER BACKEND
+    - name: Start frontend server
+      working-directory: ./frontend
+      run: |
+        echo "Starting frontend on localhost (127.0.0.1) port 3000..."
+        echo "Frontend will proxy API requests to http://localhost:5000"
+        echo "Checking if setupProxy.js exists..."
+        ls -la src/setupProxy.js || echo "WARNING: setupProxy.js not found"
+        echo ""
+        npm start > frontend.log 2>&1 &
+        echo $! > frontend.pid
+        echo "Frontend PID: $(cat frontend.pid)"
+      env:
+        CI: true
+        # Ensure frontend uses localhost for backend proxy
+        REACT_APP_API_URL: /api
+
+    # Wait for frontend to be fully ready
+    - name: Wait for frontend
+      run: |
+        echo "Waiting for frontend to be ready..."
+        for i in {1..60}; do
+          if curl -f http://localhost:3000 2>/dev/null; then
+            echo "Frontend is ready!"
+            # Give it extra time to fully initialize and connect to backend
+            # The frontend makes an immediate fetch on mount, so we need to wait
+            # for that initial request to complete (or fail and retry)
+            echo "Waiting for initial frontend-backend connection to stabilize..."
+            sleep 10
+            echo "Frontend fully initialized!"
+            echo ""
+            echo "Checking frontend logs for proxy initialization..."
+            cat frontend/frontend.log | grep -i "proxy\|setupProxy" | head -10 || echo "No proxy initialization logs found"
+            exit 0
+          fi
+          echo "Attempt $i: Frontend not ready yet, waiting..."
+          sleep 3
+        done
+        echo "Frontend failed to start!"
+        cat frontend/frontend.log || true
+        exit 1
+
+    # Verify both services are responding without errors
+    - name: Verify services are healthy
+      run: |
+        echo "=== Network Connectivity Diagnostics ==="
+        echo "All services run on the same GitHub Actions runner (localhost network)"
+        echo ""
+        echo "Backend: http://localhost:5000 (binding to 0.0.0.0:5000)"
+        echo "Frontend: http://localhost:3000 (proxying /api to localhost:5000)"
+        echo ""
+        echo "Checking backend health..."
+        curl -f http://localhost:5000/api/tasks -v || (echo "❌ Backend health check failed!" && cat backend/backend.log && exit 1)
+        echo "✅ Backend is healthy"
+        echo ""
+        echo "Checking frontend health..."
+        curl -f http://localhost:3000 -v || (echo "❌ Frontend health check failed!" && cat frontend/frontend.log && exit 1)
+        echo "✅ Frontend is healthy"
+        echo ""
+        echo "Testing frontend-to-backend proxy connectivity..."
+        # The frontend should be serving and should have proxy configured
+        FRONTEND_HTML=$(curl -s http://localhost:3000)
+        if echo "$FRONTEND_HTML" | grep -q "Task Manager"; then
+          echo "✅ Frontend is serving correctly"
+        else
+          echo "❌ Frontend not serving expected content"
+          echo "HTML received:"
+          echo "$FRONTEND_HTML" | head -20
+          exit 1
+        fi
+        # Check if there are any visible error messages in the initial render
+        # Note: Initial transient errors during health check are expected as frontend
+        # initializes and retries connection to backend
+        echo "Note: Any initial transient errors during startup are handled by retry logic"
+        echo ""
+        echo "Testing backend-frontend connectivity..."
+        echo ""
+        echo "1. Backend direct test (bypass proxy)..."
+        BACKEND_CODE=$(curl -s -o /tmp/backend_direct.txt -w "%{http_code}" http://localhost:5000/api/tasks)
+        echo "   Backend response code: $BACKEND_CODE"
+        if [ "$BACKEND_CODE" = "200" ]; then
+          echo "   ✅ Backend is accessible directly"
+        else
+          echo "   ❌ Backend not responding properly"
+          cat backend/backend.log | tail -50
+          exit 1
+        fi
+        
+        echo ""
+        echo "2. Frontend proxy test (through React dev server)..."
+        PROXY_HTTP_CODE=$(curl -s -o /tmp/proxy_response.txt -w "%{http_code}" http://localhost:3000/api/tasks)
+        PROXY_BODY=$(cat /tmp/proxy_response.txt)
+        
+        echo "   Proxy HTTP Code: $PROXY_HTTP_CODE"
+        
+        if [ "$PROXY_HTTP_CODE" = "200" ]; then
+          # Check if response is valid JSON
+          if echo "$PROXY_BODY" | jq . > /dev/null 2>&1; then
+            echo "   ✅ Proxy working! Valid JSON response received"
+            echo "   Response: $PROXY_BODY"
+          else
+            echo "   ⚠️  Warning: Response code 200 but not JSON"
+            echo "   This may indicate proxy not configured, but tests might still work"
+            echo "   Response preview: $(echo "$PROXY_BODY" | head -c 200)"
+          fi
+        else
+          echo "   ⚠️  Proxy test failed with code: $PROXY_HTTP_CODE"
+          echo "   This might be expected in CI mode with certain React configurations"
+          echo ""
+          echo "   Diagnostic information:"
+          echo "   - setupProxy.js exists: $([ -f frontend/src/setupProxy.js ] && echo 'YES' || echo 'NO')"
+          echo "   - http-proxy-middleware installed: $(cd frontend && npm list http-proxy-middleware > /dev/null 2>&1 && echo 'YES' || echo 'NO')"
+          echo ""
+          echo "   Frontend logs (last 30 lines):"
+          cat frontend/frontend.log | tail -30
+          echo ""
+          echo "   NOTE: Tests will still proceed. The proxy will be tested during actual E2E tests."
+          echo "   If E2E tests fail with proxy errors, we'll need to investigate further."
+        fi
+        echo ""
+        echo "3. Network interfaces verification..."
+        netstat -tuln | grep -E ':(3000|5000)' || echo "   Note: netstat not showing ports (this is normal in some environments)"
+        echo ""
+        echo "=== Health Check Summary ==="
+        echo "✅ Backend is healthy and accessible at localhost:5000"
+        echo "✅ Frontend is healthy and serving at localhost:3000"
+        echo "✅ Both services are on the same network (localhost)"
+        echo ""
+        echo "Proceeding with E2E tests..."
+
+    # Run Frontend E2E tests
+    - name: Run Frontend E2E tests
+      working-directory: ./frontend
+      run: |
+        echo "=== Pre-test Network Verification ==="
+        echo "Verifying backend is accessible from test environment..."
+        curl -f http://localhost:5000/api/tasks -s || (echo "ERROR: Backend not accessible!" && exit 1)
+        echo "Backend is accessible ✓"
+        echo ""
+        echo "Verifying frontend is serving..."
+        curl -f http://localhost:3000 -s > /dev/null || (echo "ERROR: Frontend not accessible!" && exit 1)
+        echo "Frontend is accessible ✓"
+        echo ""
+        echo "=== Running Playwright Tests ==="
+        npx playwright test
+      continue-on-error: false
+      env:
+        # Ensure consistent network addressing
+        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+
+    # Run Backend API tests
+    - name: Run Backend E2E tests
+      working-directory: ./backend
+      run: |
+        echo "=== Running Backend API Tests ==="
+        echo "Backend should be accessible at localhost:5000"
+        curl -f http://localhost:5000/api/tasks -s || (echo "ERROR: Backend not accessible for API tests!" && exit 1)
+        echo "Backend is accessible ✓"
+        echo ""
+        npx playwright test
+      continue-on-error: false
+
+    # Print logs on failure
+    - name: Print server logs on failure
+      if: failure()
+      run: |
+        echo "=== Backend Logs ==="
+        cat backend/backend.log || echo "No backend logs"
+        echo "=== Frontend Logs ==="
+        cat frontend/frontend.log || echo "No frontend logs"
+
+    # Upload Playwright reports
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report-frontend
+        path: frontend/playwright-report/
+        retention-days: 30
+
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report-backend
+        path: backend/playwright-report/
+        retention-days: 30
+
+    # Upload test results
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          frontend/test-results/
+          backend/test-results/
+        retention-days: 30
