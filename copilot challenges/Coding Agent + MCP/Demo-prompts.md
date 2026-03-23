@@ -1,82 +1,77 @@
-# Copilot Coding Agent + MCP — Demo Prompts
+# Copilot Coding Agent Demo Prompts
 
-## Setup Workflow: `copilot-setup-steps.yml`
+## Smart Filtering System
 
-### What is it?
-`.github/workflows/copilot-setup-steps.yml` is a special GitHub Actions workflow
-recognised by the **GitHub Copilot Coding Agent**. It pre-installs all project
-dependencies into the agent's cloud environment before it starts any task.
+### Filter by Categories
 
-### Why is it significant?
+**Feature:**  
+Add a drop down option to filter tasks by categories of work, personal and urgent.
 
-| Without it | With it |
-|---|---|
-| Agent installs deps on every run (slow) | Deps are pre-cached and ready instantly |
-| Risk of install failures mid-task | Environment is verified before agent starts |
-| Agent may not know what tools are needed | Explicitly declares the full stack |
-| Longer feedback loops | Agent can build, test and run code immediately |
-
-### What it pre-installs for THIS project
-
-| Layer | Tool | Why |
-|---|---|---|
-| C# Backend | .NET 9 SDK + NuGet restore | Build and run `TaskApi` (ASP.NET Core) |
-| React Frontend | Node.js 20 + npm ci | Build and run the React TypeScript app |
-| Legacy Backend | Node.js npm ci | Run jest unit tests + backend e2e |
-| E2E Testing | Playwright + Chromium | Run frontend and backend e2e test suites |
+**Ready-to-Use Prompt:**  
+```
+Add a drop down option to filter tasks by categories
+```
 
 ---
 
-## Demo Prompts — Copilot Coding Agent
+## Demo: Create an Issue for the Feature
 
-Use these prompts in **GitHub Copilot Coding Agent** (github.com → your repo → Copilot tab):
+1. **Prompt Copilot Chat:**
+   ```
+   Create a GitHub issue titled "Add category filter dropdown" with the following description:
+   "Implement a dropdown in the frontend to filter tasks by categories: work, personal, urgent."
+   Assign this issue to the Copilot Coding Agent.
+   ```
 
-### Feature Development
-```
-Add a task category field to tasks with values: work, personal, urgent.
-Update the C# backend model, service, controller and React frontend.
-```
+2. **Create an issue in Github to Generate Unit Tests for the category filter dropdown feature:**
+   ```
+   Create a unit test in [your framework, e.g. React Testing Library or Jest] for the category filter dropdown feature.
+   Add the test to the same issue.
+   ```
 
-```
-Add a dropdown filter to the React frontend to filter tasks by category.
-```
+---
 
-```
-Add the ability to edit an existing task's title inline in the task list.
-```
+## Demo: Assign the Pull Request for Review
 
-### Testing
-```
-Generate xUnit unit tests for TaskService.cs covering all CRUD operations,
-toggle, and error cases for missing tasks.
-```
+- After the Coding Agent opens a PR, prompt Copilot Chat:
+  ```
+  Assign the pull request for the category filter dropdown feature to Copilot for review.
+  ```
 
-```
-Generate React Testing Library unit tests for TaskList and TaskInput components
-including edge cases for empty state and error handling.
-```
+---
 
-### Documentation
-```
-Generate full API documentation for all endpoints in TasksController.cs
-in OpenAPI/Swagger format and save it to docs/API.md
-```
+## Feature Development
 
-```
-Generate a setup guide for this project covering how to run the C# backend
-and React frontend locally. Save to docs/SETUP.md
-```
+- **Automated Documentation:**  
+  ```
+  Generate API documentation for the backend endpoints and add it to docs/API.md.
+  ```
 
-### MCP — GitHub Integration
-```
-List all open issues in this repository
-```
+- **End-to-End Test Generation:**  
+  ```
+  Create a Playwright end-to-end test for the category filter dropdown.
+  ```
 
-```
-Create a GitHub issue titled "Add task category feature" with full description
-of what needs to be built across the C# backend and React frontend.
-```
+- **Code Refactoring:**  
+  ```
+  Refactor the task filtering logic to improve performance and readability.
+  ```
 
-```
-Create a pull request from the current branch to main summarising all changes made.
-```
+- **Error Handling Improvements:**  
+  ```
+  Add error handling for invalid category selections in the dropdown.
+  ```
+
+- **Workflow Automation:**  
+  ```
+  Set up a GitHub Actions workflow to run all tests and report status on PRs.
+  ```
+
+- **Release Notes Generation:**  
+  ```
+  Generate release notes for the latest set of merged PRs.
+  ```
+
+---
+
+Use these prompts in Copilot Chat or as GitHub issues to demonstrate the full power of the Copilot Coding Agent!
