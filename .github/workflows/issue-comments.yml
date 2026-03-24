@@ -1,0 +1,140 @@
+name: "Automated Issue Comments"
+
+# Automatically posts comments on GitHub issues when key events happen.
+# Triggers:
+#   1. PR opened        → comments on the linked issue with a PR link
+#   2. PR merged        → comments on the linked issue that it's resolved
+#   3. Issue assigned   → comments if assigned to the GitHub Copilot agent
+
+on:
+  pull_request:
+    types: [opened, closed]
+  issues:
+    types: [assigned]
+
+jobs:
+  # ── Trigger 1: PR Opened → comment on linked issue ──────────────────────
+  comment-on-pr-opened:
+    name: "Comment: PR Opened"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    permissions:
+      issues: write
+      pull-requests: read
+    steps:
+      - name: Find linked issue and post comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prBody = context.payload.pull_request.body || '';
+            const prUrl  = context.payload.pull_request.html_url;
+            const prNum  = context.payload.pull_request.number;
+
+            // Extract issue numbers from PR body — supports:
+            // "Closes #42", "Fixes #42", "Resolves #42"
+            const issueMatches = prBody.match(
+              /(?:closes|fixes|resolves)\s+#(\d+)/gi
+            ) || [];
+
+            if (issueMatches.length === 0) {
+              console.log('No linked issues found in PR body. Skipping.');
+              return;
+            }
+
+            for (const match of issueMatches) {
+              const issueNumber = parseInt(match.match(/\d+/)[0]);
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                issue_number: issueNumber,
+                body: [
+                  `🚀 **A Pull Request has been opened for this issue.**`,
+                  ``,
+                  `**PR #${prNum}:** ${prUrl}`,
+                  ``,
+                  `The implementation is now under review. Check the PR for details and progress.`,
+                ].join('\n'),
+              });
+              console.log(`Commented on issue #${issueNumber}`);
+            }
+
+  # ── Trigger 2: PR Merged → comment on linked issue ──────────────────────
+  comment-on-pr-merged:
+    name: "Comment: PR Merged / Issue Resolved"
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'pull_request' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true
+    permissions:
+      issues: write
+      pull-requests: read
+    steps:
+      - name: Find linked issue and post comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prBody = context.payload.pull_request.body || '';
+            const prNum  = context.payload.pull_request.number;
+
+            const issueMatches = prBody.match(
+              /(?:closes|fixes|resolves)\s+#(\d+)/gi
+            ) || [];
+
+            if (issueMatches.length === 0) {
+              console.log('No linked issues found in PR body. Skipping.');
+              return;
+            }
+
+            for (const match of issueMatches) {
+              const issueNumber = parseInt(match.match(/\d+/)[0]);
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo:  context.repo.repo,
+                issue_number: issueNumber,
+                body: [
+                  `✅ **This issue has been resolved and deployed.**`,
+                  ``,
+                  `PR #${prNum} was successfully merged into \`main\`.`,
+                  `The feature/fix is now live. Thank you for your contribution! 🎉`,
+                ].join('\n'),
+              });
+              console.log(`Commented on issue #${issueNumber}`);
+            }
+
+  # ── Trigger 3: Issue assigned to Copilot → post comment ─────────────────
+  comment-on-copilot-assigned:
+    name: "Comment: Issue Assigned to Copilot"
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'issues' &&
+      github.event.action == 'assigned' &&
+      github.event.assignee.login == 'copilot'
+    permissions:
+      issues: write
+    steps:
+      - name: Post comment on Copilot assignment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = context.payload.issue.number;
+            const issueTitle  = context.payload.issue.title;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              issue_number: issueNumber,
+              body: [
+                `🤖 **GitHub Copilot agent has been assigned to this issue.**`,
+                ``,
+                `Copilot is now analysing the requirements for: **"${issueTitle}"**`,
+                ``,
+                `Expected next steps:`,
+                `- 🔍 Reads and understands the issue requirements`,
+                `- 🌿 Creates a feature branch following the repo naming conventions`,
+                `- 💻 Implements the solution`,
+                `- 🧪 Adds unit and/or e2e tests`,
+                `- 📬 Opens a Pull Request linked to this issue`,
+              ].join('\n'),
+            });
+            console.log(`Commented on issue #${issueNumber} — assigned to Copilot`);
