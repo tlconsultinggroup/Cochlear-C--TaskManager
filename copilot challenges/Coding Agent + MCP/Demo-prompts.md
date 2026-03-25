@@ -16,14 +16,14 @@ Add a drop down option to filter tasks by categories
 
 ## Demo: Create an Issue for the Feature
 
-1. **Prompt Copilot Chat:**
+### 1. Prompt Copilot Chat:
    ```
    Create a GitHub issue titled "Add category filter dropdown" with the following description:
    "Implement a dropdown in the frontend to filter tasks by categories: work, personal, urgent."
    Assign this issue to the Copilot Coding Agent.
    ```
 
-2. **Create an issue in Github to Generate Unit Tests for the category filter dropdown feature:**
+### 2. Create an issue in Github to Generate Unit Tests for the category filter dropdown feature:
    ```
    Create a unit test in [your framework, e.g. React Testing Library or Jest] for the category filter dropdown feature.
    Add the test to the same issue.
@@ -31,22 +31,20 @@ Add a drop down option to filter tasks by categories
 
 ---
 
-## Demo: Assign the Pull Request for Review
-
-- After the Coding Agent opens a PR, prompt Copilot Chat:
+### 3. Assign the Pull Request for Review
+After the Coding Agent opens a PR, prompt Copilot Chat:
   ```
   Assign the pull request for the category filter dropdown feature to Copilot for review.
   ```
-
 ---
 
-### 1. 🏷️ Enforce Consistent Labeling & Status Tracking
+### 4. Enforce Consistent Labeling & Status Tracking
 
 **Goal:** Audit all open issues and apply consistent labels automatically based on their content.
 
 **How it works:** Copilot iterates through every open issue via MCP and labels them all in one prompt — no manual triage needed.
 
-**Ready-to-Use Prompt:**
+**Prompt Copilot Chat:**
 ```
 Review all open issues in tlconsultinggroup/Cochlear-C--TaskManager.
 For each issue, apply appropriate labels from: bug, feature, enhancement,
@@ -60,22 +58,22 @@ urgent, in-progress, needs-review. Base the label on the issue title and descrip
 
 ---
 
-### 2. ✏️ Update Issue Labels
+### 5. Update Issue Labels
 
 **Goal:** Add or remove labels on a specific issue without touching the GitHub UI.
 
-**Ready-to-Use Prompt:**
+**Prompt Copilot Chat:**
 ```
 Update the labels on issue #[number] — add "in-progress" and remove "needs-triage".
 ```
 
 ---
 
-### 3. 💬 Add a Comment to an Issue
+### 6. 💬 Add a Comment to an Issue
 
 **Goal:** Post an automated status update or PR summary comment to a GitHub issue.
 
-**Ready-to-Use Prompt:**
+**Prompt Copilot Chat:**
 ```
 Add a comment to issue #[number] saying:
 "The category filter dropdown has been implemented and is ready for review in PR #[pr-number]."
@@ -92,11 +90,11 @@ Add a comment to issue #[number] saying:
 
 ---
 
-### 4. 🤖 Assign Issue to GitHub Copilot
+### 7. Assign Issue to GitHub Copilot
 
 **Goal:** Hand off an issue to the Copilot Coding Agent for autonomous implementation.
 
-**Ready-to-Use Prompt:**
+**Prompt Copilot Chat:**
 ```
 Assign issue #[number] to the GitHub Copilot coding agent for implementation.
 ```
