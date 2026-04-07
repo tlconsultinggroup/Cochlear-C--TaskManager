@@ -1,0 +1,312 @@
+# 🎬 GitHub Copilot Customization Demo — MedTask Case Study
+
+**9 Scenes showcasing Copilot customization features**
+
+Repository: `Cochlear-C--TaskManager` (React + TypeScript + .NET Task Manager)
+
+---
+
+## 📋 Scene 1: Onboarding the Team — Custom Instructions
+**Scenario:** A new developer joins and Copilot needs to reflect your team's coding standards immediately.
+
+### Demo flow
+
+1. **Create** `.github/copilot-instructions.md` at the repo root
+2. **Include project-wide rules:**
+   - Always use TypeScript strict mode
+   - Prefer functional components
+   - Use async/await (never `.then().catch()`)
+   - Never use `any`
+   - Follow REST naming conventions in the .NET API
+3. **Show** Copilot completing code without vs. with the instructions — the difference in quality and alignment with your stack is immediate
+
+### What it does
+Orients Copilot to the stack and repo layout. Can be:
+- **Global Instructions** — workspace-wide
+- **Repository Instructions** — project standards
+- **Path-Specific Instructions** — advanced (Scene 4)
+
+### 💬 Talking point
+*"This is the baseline layer — Copilot learns your team's DNA before a developer writes a single line."*
+
+---
+
+## 🔒 Scene 2: Sensitive Data Enters the Picture — Content Exclusion
+**Scenario:** The `appsettings.Development.json` contains local secrets and the `TaskApi/` folder has proprietary business logic your team doesn't want sent to Copilot.
+
+### Demo flow
+
+1. **Show** Copilot currently suggesting completions based on sensitive connection strings in `appsettings.Development.json`
+2. **Open** VS Code settings → configure `github.copilot.chat.codebase.excludeFiles` or use the GitHub org-level content exclusion policy to exclude:
+   ```
+   **/appsettings*.json
+   **/bin/**
+   **/obj/**
+   ```
+3. **Demonstrate** that Copilot no longer references or leaks those values in suggestions
+
+### 💬 Talking point
+*"We can't afford accidental data leakage. Content exclusion is your compliance guardrail."*
+
+---
+
+## 📝 Scene 3: Standardizing Feature Work — Prompt Files
+**Scenario:** The team frequently implements new API endpoints + React components. You want a repeatable, high-quality pattern for this.
+
+### Demo flow
+
+**The reusable template** — works for any feature:
+1. **Create** `.github/prompts/new-feature.prompt.md` (8-step scaffold with placeholders)
+2. **Create** `.github/prompts/add-priority-field.prompt.md` (specific Priority feature)
+
+### How to use them
+
+| Method | Example |
+|---|---|
+| **Slash command** | Type `/` in chat → VS Code lists your `.prompt.md` files |
+| **Attach explicitly** | Click 📎 attach button or type `#new-feature.prompt.md` |
+| **Direct invocation** | `Use this prompt to implement a "Priority" field on tasks` |
+| **With workspace** | `@workspace Use #add-priority-field.prompt.md to implement the Priority feature` |
+
+### What happens behind the scenes
+
+When Copilot runs `add-priority-field.prompt.md`, it **simultaneously respects:**
+- ✅ The step-by-step scaffold from `new-feature.prompt.md` (referenced explicitly)
+- ✅ The coding rules from `copilot-instructions.md` (always active globally)
+
+### 💬 Talking point
+*"Prompt files turn tribal knowledge into a reusable asset. Every developer follows the same scaffold, every time."*
+
+---
+
+## 🗺️ Scene 4: Domain-Specific Behavior — Path-Specific Rules
+**Scenario:** The backend (.NET) and frontend (React/TS) need different Copilot behavior. The backend team wants stricter null safety suggestions; the frontend team wants accessibility hints in JSX.
+
+### Demo flow
+
+**Architecture decision:** `.github/copilot-instructions.md` is the ONE global file — GitHub Copilot auto-loads it.
+
+**Two implementation options:**
+
+| Option A: Multiple Prompt Files | Option B: Subfolder Instructions (Auto) |
+|---|---|
+| Create `.github/prompts/backend-standards.prompt.md` | Place `backend/.github/copilot-instructions.md` |
+| Developer attaches explicitly: `@workspace #backend-standards.prompt.md Add a new endpoint` | Copilot applies **automatically** when editing `backend/**` files |
+
+### Rules to demonstrate
+
+- **For `backend/**`**: *"Always use nullable reference types. Add XML doc comments on public methods."*
+- **For `frontend/src/components/**`**: *"Always include ARIA labels on interactive elements. Use React.FC with explicit prop types."*
+
+### Demo
+
+1. Generate a new `TasksController.cs` method
+2. Generate a new `TaskList.tsx` component
+3. **Show** different suggestions for different paths
+
+### 💬 Talking point
+*"One codebase, two very different standards. Path-specific rules let Copilot context-switch automatically."*
+
+---
+
+## 🛠️ Scene 5: Repetitive Expertise on Demand — Agent Skills
+**Scenario:** Your QA lead wants Copilot to automatically run tests and interpret results whenever a new component is created.
+
+### Demo flow — Two approaches for different workflows
+
+#### 🅰️ Approach A: MCP Tools (VS Code Agent Mode)
+**Use case:** *"During development, I ask Copilot to run my tests right here in the editor and tell me what's broken."*
+
+**Files created:**
+- `.vscode/mcp-tools/index.js` — Node.js MCP server with 4 tools
+- `.vscode/mcp.json` — registers the `medtask-tools` server
+- `.github/skills/run-tests/SKILL.md` — documents test patterns
+
+**Tools available:**
+1. `run_frontend_tests` — runs Jest, parses JSON output
+2. `run_backend_tests` — runs .NET xUnit, parses plain text
+3. `run_all_tests` — both in sequence
+4. `run_single_test_file` — targeted Jest run with pattern match
+
+**Demo it:**
+1. `Cmd+Shift+P` → `Developer: Reload Window`
+2. Open Copilot Chat → ask: *"Run the frontend tests and tell me what's failing"*
+3. Copilot invokes the MCP tool, gets results, narrates them
+
+---
+
+#### 🅱️ Approach B: `.github/skills/` (GitHub Copilot Coding Agent)
+**Use case:** *"Once it's in GitHub, I assign the failing issue to the Coding Agent. It reads the skill, knows how to run our tests, and opens a PR — while I'm in a meeting."*
+
+**Files created:**
+- `.github/skills/run-tests/SKILL.md` — full runbook + failure pattern table
+- `.github/scripts/run-tests.sh` — bash script (works in CI too)
+
+**Demo it:**
+1. Create GitHub Issue: *"🧪 Tests failing after Priority field added — fix and add missing coverage"*
+2. Assign to `@copilot` (GitHub Copilot Coding Agent)
+3. Coding Agent reads `SKILL.md`, runs `.github/scripts/run-tests.sh`, fixes issues, opens PR
+
+### 💬 Talking point
+*"Skills extend what Copilot can do — it's not just a code writer, it becomes an active participant in your CI loop."*
+
+---
+
+## 🔌 Scene 7: Bringing in External Context — Copilot Extensions (MCP)
+**Scenario:** The team tracks work in GitHub Issues and wants Copilot to pull live issue data directly into the conversation.
+
+### Demo flow
+
+1. **Reference** the existing `copilot challenges/MCP-Labs/Github-MCP` in your repo
+2. **Enable** the GitHub MCP extension (already configured in `.vscode/mcp.json`)
+3. **Ask Copilot:**
+   > *"What are the open issues in this repo? Which ones are related to the task API?"*
+4. **Use** the response to drive the next implementation decision
+
+### Prerequisites
+⚠️ **PAT required:** The exposed PAT in `mcp.json` must be revoked and replaced with a new one that has SSO authorisation for `tlconsultinggroup`. Use `${input:githubPat}` with VS Code secret storage.
+
+### 💬 Talking point
+*"Extensions make Copilot context-aware of the world outside your editor — issue trackers, docs, observability tools."*
+
+---
+
+## 🛡️ Scene 8: Owning a Vertical — Custom Agents
+**Scenario:** Your security lead wants a dedicated "ComplianceAgent" that reviews all PRs for HIPAA-related risks — checking for logging of PHI, unencrypted fields, and missing authorization attributes.
+
+### Demo flow
+
+#### 1. Create the custom agent definition
+**File:** `.github/agents/compliance.agent.md`
+
+**Frontmatter:**
+```yaml
+---
+name: compliance
+description: HIPAA compliance reviewer
+tools:
+  - codebase   # read-only — no editFiles or runCommands
+  - search
+  - fetch
+handoffs:
+  - label: "🔧 Fix these issues with Copilot"
+    agent: copilot
+    prompt: "Fix the HIPAA compliance issues..."
+    send: false
+---
+```
+
+**Body:** The 5 HIPAA checks:
+1. ✅ Authorization (`[Authorize]`)
+2. ✅ PHI Logging
+3. ✅ Unencrypted Fields
+4. ✅ Hardcoded Credentials
+5. ✅ Input Validation
+
+---
+
+#### 2. Demo it live
+
+1. **`Cmd+Shift+P`** → `Developer: Reload Window` (picks up the new agent file)
+2. **Open Copilot Chat** → click the **agent dropdown** → select **`compliance`**
+3. **Type:** `Review #file:backend/TaskApi/Controllers/TasksController.cs`
+4. **Result:** It will **FAIL** on Check 1 (no `[Authorize]`) and **WARN** on Check 5 (no `[MaxLength]` on `CreateTaskRequest`)
+5. **Click** **"🔧 Fix these issues with Copilot"** → hands off to `@copilot` with context intact
+
+---
+
+#### 3. What the report shows
+
+```
+═══════════════════════════════════════════════════════
+  🏥  HIPAA Compliance Report — MedTask
+═══════════════════════════════════════════════════════
+
+## Check 1 — Authorization
+🔴 FAIL
+→ Finding: TasksController has NO [Authorize] attribute
+→ File: TasksController.cs · Line 7
+→ HIPAA ref: §164.312(a)(1)
+→ Remediation: Add [Authorize] to class declaration
+
+## Check 5 — Input Validation
+🟡 WARN
+→ Finding: CreateTaskRequest.Title has no [MaxLength]
+→ File: TasksController.cs · Line 76
+→ HIPAA ref: §164.312(c)(1)
+
+  Overall risk level: CRITICAL
+═══════════════════════════════════════════════════════
+```
+
+### 💬 Talking point
+*"Custom agents are specialists. You don't want your security reviews done by a generalist — you want a reviewer who only thinks about compliance."*
+
+---
+
+## 🎯 Scene 9: Putting It All Together — Context Engineering
+**Scenario:** The team now wants to optimize how Copilot reasons about large, complex tasks — ensuring it has exactly the right context and nothing that dilutes it.
+
+### Demo flow: Vague vs. Engineered prompts
+
+| ❌ Vague | ✅ Engineered |
+|---|---|
+| *"Add authentication"* | *"Add JWT bearer authentication to the .NET API using the existing ITaskService pattern. The frontend uses the proxy in setupProxy.js. Add an [Authorize] attribute to all controller methods. Do not modify appsettings.Development.json."* |
+| *"Fix the compliance issues"* | *"Add `[Authorize]` to `#file:TasksController.cs` following the pattern in `#file:Program.cs`. Add `[MaxLength(200)]` and `[Required]` to `CreateTaskRequest.Title`. Do not change any endpoint behaviour."* |
+
+---
+
+### Demonstrate using `#file` references
+
+**Instead of:**
+> *"Update the task controller and service"*
+
+**Do this:**
+> *"Add priority filtering to `#file:TasksController.cs` following the pattern in `#file:ITaskService.cs`. Update the frontend types in `#file:types.ts` to match."*
+
+**Show** how scoping context improves response relevance and reduces hallucination.
+
+---
+
+### The cumulative effect
+
+At this point in the demo, when you ask Copilot to implement a feature, it's respecting **all layers simultaneously:**
+
+1. ✅ **Global instructions** (`.github/copilot-instructions.md`) — TypeScript strict, no `any`, async/await
+2. ✅ **Path-specific rules** (`backend/.github/`, `frontend/.github/`) — XML docs for .NET, ARIA labels for React
+3. ✅ **Prompt file scaffold** (`new-feature.prompt.md`) — 8-step implementation pattern
+4. ✅ **Custom agent persona** (`@compliance`) — security-first review lens
+5. ✅ **Skills/tools** (MCP test runner) — automated verification
+6. ✅ **Engineered context** (`#file` references) — precisely scoped inputs
+
+### 💬 Talking point
+*"Context engineering is the skill that multiplies everything else. The better the context, the better the agent."*
+
+---
+
+## ✅ What's been built in this repo
+
+| Scene | Files Created 
+|---|---|---|
+| **1. Custom Instructions** | `.github/copilot-instructions.md`<br>`backend/.github/copilot-instructions.md`<br>`frontend/.github/copilot-instructions.md` 
+| **2. Content Exclusion** | `.vscode/settings.json` (excludeFiles config) 
+| **3. Prompt Files** | `.github/prompts/new-feature.prompt.md`<br>`.github/prompts/add-priority-field.prompt.md` 
+| **4. Path-Specific Rules** | 3-file `copilot-instructions.md` architecture 
+| **5. Agent Skills** | `.vscode/mcp-tools/index.js` (4 tools)<br>`.vscode/mcp.json`<br>`.github/skills/run-tests/SKILL.md`<br>`.github/scripts/run-tests.sh`<br>`backend/TaskApi.Tests/` (35 passing tests) | ✅ Complete |
+| **7. Copilot Extensions** | `.vscode/mcp.json` (GitHub MCP server) | ⚠️ Needs new PAT |
+| **8. Custom Agents** | `.github/agents/compliance.agent.md` 
+| **9. Context Engineering** | No files — demonstrated through prompting technique 
+
+---
+
+## 🎯 Quick demo checklist
+
+Before presenting, ensure:
+- [ ] `Cmd+Shift+P` → `Developer: Reload Window` (loads all customizations)
+- [ ] `.vscode/mcp.json` PAT is updated with SSO auth
+- [ ] All 35 backend tests pass: `dotnet test backend/TaskApi.Tests`
+- [ ] All 15 frontend tests pass: `.github/scripts/run-tests.sh frontend`
+- [ ] `@compliance` agent appears in agent dropdown
+- [ ] MCP tools load without errors: `node -e "import('.vscode/mcp-tools/index.js')"`
+
+

@@ -11,13 +11,14 @@ public class TaskService : ITaskService
 
     public TodoTask? GetById(int id) => _tasks.FirstOrDefault(t => t.Id == id);
 
-    public TodoTask Create(string title)
+    public TodoTask Create(string title, TaskPriority priority = TaskPriority.Medium)
     {
         var task = new TodoTask
         {
             Id = _nextId++,
             Title = title,
             Completed = false,
+            Priority = priority,
             CreatedAt = DateTime.UtcNow
         };
         _tasks.Add(task);
@@ -46,5 +47,14 @@ public class TaskService : ITaskService
         if (task == null) return false;
         _tasks.Remove(task);
         return true;
+    }
+
+    /// <summary>Updates the priority of an existing task. Returns null if the task is not found.</summary>
+    public TodoTask? UpdatePriority(int id, TaskPriority priority)
+    {
+        var task = GetById(id);
+        if (task == null) return null;
+        task.Priority = priority;
+        return task;
     }
 }

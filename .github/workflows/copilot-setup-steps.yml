@@ -34,6 +34,10 @@ jobs:
         working-directory: backend/TaskApi
         run: dotnet restore
 
+      - name: Restore .NET test project dependencies
+        working-directory: backend/TaskApi.Tests
+        run: dotnet restore
+
       - name: Build ASP.NET Core backend
         working-directory: backend/TaskApi
         run: dotnet build --no-restore --configuration Release
@@ -81,3 +85,9 @@ jobs:
       - name: Verify backend .NET build artifacts
         working-directory: backend/TaskApi
         run: dotnet build --no-restore --configuration Release --verbosity minimal
+
+      - name: Verify backend tests compile and pass
+        run: dotnet test backend/TaskApi.Tests --no-restore --logger "console;verbosity=minimal"
+
+      - name: Make test runner script executable
+        run: chmod +x .github/scripts/run-tests.sh

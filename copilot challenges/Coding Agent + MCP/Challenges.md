@@ -40,7 +40,14 @@ With MCP and tools like Confluence, Jira, GitHub, and more, the Coding Agent can
 ## 3. Example End-to-End Challenge
 
 **Scenario:**
-> "A new requirement arrives in Jira: Add a category filter dropdown to the task manager."
+
+- Add functionality to edit existing tasks
+- Mark tasks as completed
+
+Ready-to-Use Prompt:
+
+Add a feature to Edit existing task
+> "A new requirement arrives in Jira: Add functionality to edit existing tasks and mark tasks as completed/pending."
 
 **Agent Actions:**
 1. Reads the Jira ticket and extracts requirements

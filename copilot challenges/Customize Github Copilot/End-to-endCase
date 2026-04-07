@@ -1,0 +1,130 @@
+
+Used 1 reference
+GitHub Copilot Customization: End-to-End Case Study
+Based on your existing React + TypeScript + .NET Task Manager project, here's a cohesive storyline that naturally introduces each Copilot customization feature at the right moment in the developer journey.
+
+🎬 The Storyline: "MedTask — Building a HIPAA-Compliant Task Manager"
+Scenario: Your team is evolving this Task Manager into a healthcare-grade application called MedTask. As a result, the team must enforce compliance rules, scale development across multiple agents, and customize Copilot for domain-specific productivity — all while maintaining quality and security.
+
+📖 Feature-by-Feature Narrative Arc
+Scene 1: Onboarding the Team — Custom Instructions
+Scenario: A new developer joins and Copilot needs to reflect your team's coding standards immediately.
+
+Demo flow:
+
+Create copilot-instructions.md at the repo root
+Include project-wide rules: always use TypeScript strict mode, prefer functional components, use async/await, never use any, follow REST naming conventions in the .NET API
+Show Copilot completing code without vs. with the instructions — the difference in quality and alignment with your stack is immediate
+Talking point: "This is the baseline layer — Copilot learns your team's DNA before a developer writes a single line."
+
+Scene 2: Sensitive Data Enters the Picture — Content Exclusion
+Scenario: The appsettings.Development.json contains local secrets and the TaskApi/ folder has proprietary business logic your team doesn't want sent to Copilot.
+
+Demo flow:
+
+Show Copilot currently suggesting completions based on sensitive connection strings in appsettings.Development.json
+Open VS Code settings → configure github.copilot.chat.codebase.excludeFiles or use the GitHub org-level content exclusion policy to exclude:
+**/appsettings*.json
+**/bin/**
+**/obj/**
+Demonstrate that Copilot no longer references or leaks those values in suggestions
+Talking point: "In healthcare, you can't afford accidental data leakage. Content exclusion is your compliance guardrail."
+
+Scene 3: Standardizing Feature Work — Prompt Files
+Scenario: The team frequently implements new API endpoints + React components. You want a repeatable, high-quality pattern for this.
+
+Demo flow:
+
+Create .github/prompts/new-feature.prompt.md:
+
+Create a new feature for the MedTask app.1. Add a new model in `backend/TaskApi/Models/`2. Add a service interface in `Services/IXxxService.cs` and implementation3. Add a controller in `Controllers/`4. Add the corresponding TypeScript type in `frontend/src/types.ts`5. Create a React component with proper error handling6. Write unit tests for both the service and the component
+Use this prompt to implement a "Priority" field on tasks — watch Copilot scaffold the full vertical slice
+Talking point: "Prompt files turn tribal knowledge into a reusable asset. Every developer follows the same scaffold, every time."
+
+Scene 4: Domain-Specific Behavior — Path-Specific Rules
+Scenario: The backend (.NET) and frontend (React/TS) need different Copilot behavior. The backend team wants stricter null safety suggestions; the frontend team wants accessibility hints in JSX.
+
+Demo flow:
+
+Extend copilot-instructions.md with path-specific rules (or show how VS Code's settings.json can be scoped):
+For backend/**: "Always use nullable reference types. Add XML doc comments on public methods."
+For frontend/src/components/**: "Always include ARIA labels on interactive elements. Use React.FC with explicit prop types."
+Demonstrate generating a new TasksController.cs method vs. a new TaskList.tsx component — different suggestions for different paths
+Talking point: "One codebase, two very different standards. Path-specific rules let Copilot context-switch automatically."
+
+Scene 5: Repetitive Expertise on Demand — Agent Skills
+Scenario: Your QA lead wants Copilot to automatically run tests and interpret results whenever a new component is created.
+
+Demo flow:
+
+Define a custom skill (tool) that:
+Runs cd frontend && npm test -- --watchAll=false
+Parses the Jest output
+Returns a structured summary of failing tests
+Attach this skill to Copilot agent mode
+After scaffolding the Priority component from Scene 3, ask Copilot: "Run tests and tell me what's failing"
+Talking point: "Skills extend what Copilot can do — it's not just a code writer, it becomes an active participant in your CI loop."
+
+Scene 6: The Big Feature — Agentic Workflows / Multi-Agent Handoffs
+Scenario: Your product manager has filed a GitHub Issue: "Add task assignment with user notifications." This requires backend, frontend, and test changes across the full stack.
+
+Demo flow:
+
+Use Agent Mode in VS Code
+Start with the prompt: "Implement task assignment based on issue #42. Follow the project conventions."
+Watch Copilot autonomously:
+Read the existing Task.cs model and TaskService.cs
+Propose schema changes
+Update the .NET API controller
+Update types.ts and the React component
+Write tests
+Show the handoff moment: where one agent scopes the work and a second executes it (e.g., planning agent → coding agent)
+Talking point: "This is where Copilot moves from assistant to collaborator — it holds the thread across the entire feature."
+
+Scene 7: Bringing in External Context — Copilot Extensions (MCP)
+Scenario: The team tracks work in GitHub Issues and wants Copilot to pull live issue data directly into the conversation.
+
+Demo flow:
+
+Reference the existing copilot challenges/MCP-Labs/Github-MCP in your repo
+Enable the GitHub MCP extension
+Ask Copilot: "What are the open issues in this repo? Which ones are related to the task API?"
+Use the response to drive the next implementation decision
+Talking point: "Extensions make Copilot context-aware of the world outside your editor — issue trackers, docs, observability tools."
+
+Scene 8: Owning a Vertical — Custom Agents
+Scenario: Your security lead wants a dedicated "ComplianceAgent" that reviews all PRs for HIPAA-related risks — checking for logging of PHI, unencrypted fields, and missing authorization attributes.
+
+Demo flow:
+
+Create a custom agent definition:
+Name: @compliance
+Instructions: "You are a HIPAA compliance reviewer for a .NET + React healthcare app. Review code for: logging of patient data, missing [Authorize] attributes on controllers, unencrypted fields in models, and hardcoded credentials."
+Point it at TasksController.cs
+Ask: @compliance review this controller for HIPAA risks
+Show it identifying missing [Authorize], potential PHI in task titles being logged
+Talking point: "Custom agents are specialists. You don't want your security reviews done by a generalist — you want a reviewer who only thinks about compliance."
+
+Scene 9: Putting It All Together — Context Engineering
+Scenario: The team now wants to optimize how Copilot reasons about large, complex tasks — ensuring it has exactly the right context and nothing that dilutes it.
+
+Demo flow:
+
+Show the difference between a vague vs. engineered prompt:
+❌ "Add authentication"
+✅ "Add JWT bearer authentication to the .NET API using the existing ITaskService pattern. The frontend uses the proxy in setupProxy.js. Add an [Authorize] attribute to all controller methods. Do not modify appsettings.Development.json."
+Demonstrate using #file references to attach exactly TasksController.cs, ITaskService.cs, and types.ts
+Show how scoping context improves response relevance and reduces hallucination
+Talking point: "Context engineering is the skill that multiplies everything else. The better the context, the better the agent."
+
+🗺️ Demo Flow Summary
+Scene	Feature	Entry Point in Workflow
+1	Custom Instructions	Developer onboarding
+2	Content Exclusion	Security & compliance setup
+3	Prompt Files	Feature kickoff / scaffolding
+4	Path-Specific Rules	Cross-stack development
+5	Agent Skills	QA / test integration
+6	Agentic Workflows	Full-feature implementation
+7	Copilot Extensions	External data integration
+8	Custom Agents	Specialized review & compliance
+9	Context Engineering	Optimization & mastery
