@@ -1,57 +1,103 @@
-# Full Stack TypeScript Application
+# Cochlear Task Manager
 
-This is a full-stack application with a TypeScript Express backend and React TypeScript frontend.
+A full-stack Task Management application built with an **ASP.NET Core (C#) REST API** backend and a **React TypeScript** frontend.
 
-## Prerequisites
+---
 
-Before you begin, ensure you have the following installed:
-- [Node.js](https://nodejs.org/) (v14.0.0 or higher)
-- [npm](https://www.npmjs.com/) (usually comes with Node.js)
-- [Git](https://git-scm.com/) for version control
+## 🚀 Tech Stack
 
-Required knowledge:
-- Basic understanding of TypeScript
-- Familiarity with React
-- Understanding of Express.js
-- Knowledge of RESTful APIs
+| Layer | Technology |
+|---|---|
+| **Backend** | ASP.NET Core 9 (C#), REST API, In-Memory Storage |
+| **Frontend** | React 19, TypeScript, Material UI |
+| **Testing** | xUnit (C#), Jest, React Testing Library, Playwright (E2E) |
+| **CI/CD** | GitHub Actions |
+| **Dev Tools** | VS Code, .NET 9 SDK, Node.js 20 |
 
-IDE Requirements:
-- VS Code (recommended) with the following extensions:
-  - ESLint
-  - Prettier (for code formatting)
-  - TypeScript support
+---
 
-## Project Structure
+## ✨ Core Features
 
-- `backend/` - Express TypeScript backend
-- `frontend/` - React TypeScript frontend
+- ✅ **Add Tasks** — Create tasks with a title via text input or voice
+- ✅ **View Tasks** — See all tasks in a clean, responsive list
+- ✅ **Toggle Completion** — Mark tasks as complete or pending with a checkbox
+- ✅ **Delete Tasks** — Remove individual tasks instantly
+- ✅ **Voice Input** — Add tasks using your microphone (Chrome, Edge, Safari)
+- ✅ **Real-time Feedback** — Loading states and user-friendly error messages
+- ✅ **Health Check** — Backend exposes a `/health` endpoint for monitoring
 
-## Getting Started
+---
 
-**Important**: Both the backend and frontend servers need to be running for the application to work properly.
+## 🗂️ Project Structure
 
-### Backend
+```
+├── backend/
+│   └── TaskApi/                  # ASP.NET Core Web API (C#)
+│       ├── Controllers/
+│       │   └── TasksController.cs
+│       ├── Models/
+│       │   └── Task.cs
+│       ├── Services/
+│       │   ├── ITaskService.cs
+│       │   └── TaskService.cs
+│       ├── Program.cs
+│       └── TaskApi.csproj
+├── frontend/                     # React TypeScript SPA
+│   └── src/
+│       ├── components/
+│       │   ├── TaskInput.tsx
+│       │   ├── TaskList.tsx
+│       │   └── VoiceInput.tsx
+│       ├── App.tsx
+│       └── types.ts
+└── .github/
+    └── workflows/                # GitHub Actions CI/CD
+```
 
-1. Navigate to the backend directory:
+---
+
+## 🛠️ Prerequisites
+
+| Tool | Version | Link |
+|---|---|---|
+| .NET SDK | 9.0 or higher | [Download](https://dotnet.microsoft.com/download) |
+| Node.js | 20.0 or higher | [Download](https://nodejs.org/) |
+| npm | comes with Node.js | — |
+| Git | latest | [Download](https://git-scm.com/) |
+
+**VS Code Extensions (Recommended):**
+- C# Dev Kit
+- ESLint
+- Prettier
+
+---
+
+## ▶️ Getting Started
+
+> **Important:** Both the backend and frontend servers must be running for the application to work.
+
+### Backend (ASP.NET Core)
+
+1. Navigate to the backend project:
    ```bash
-   cd backend
+   cd backend/TaskApi
    ```
 
-2. Install dependencies:
+2. Restore dependencies:
    ```bash
-   npm install
+   dotnet restore
    ```
 
 3. Start the development server:
    ```bash
-   npm run dev
+   dotnet run --launch-profile http
    ```
 
-The backend will run on http://localhost:5000
+The backend will run on **http://localhost:5001**
 
-You can verify the backend is running by visiting http://localhost:5000/health
+Verify it's running: http://localhost:5001/health
 
-### Frontend
+### Frontend (React)
 
 1. Navigate to the frontend directory:
    ```bash
@@ -68,26 +114,29 @@ You can verify the backend is running by visiting http://localhost:5000/health
    npm start
    ```
 
-The frontend will run on http://localhost:3000
+The frontend will run on **http://localhost:3000**
 
-## Development
+The React dev server proxies `/api` requests to the backend automatically.
 
-- Backend: The TypeScript Express server is configured with hot-reloading using ts-node.
-- Frontend: Create React App with TypeScript template provides hot-reloading out of the box.
+---
 
-## Available Scripts
+## 📜 Available Scripts
 
-### Backend
-- `npm run dev` - Start the development server
-- `npm run build` - Build the TypeScript code
-- `npm start` - Run the built code
-- `npm run watch` - Run TypeScript compiler in watch mode
+### Backend (C#)
+| Command | Description |
+|---|---|
+| `dotnet run --launch-profile http` | Start the API on port 5001 |
+| `dotnet build` | Build the project |
+| `dotnet test` | Run xUnit tests |
+| `dotnet publish` | Publish for deployment |
 
-### Frontend
-- `npm start` - Start the development server
-- `npm test` - Run tests
-- `npm run build` - Build for production
-- `npm run eject` - Eject from Create React App
+### Frontend (React)
+| Command | Description |
+|---|---|
+| `npm start` | Start the development server |
+| `npm test` | Run Jest unit tests |
+| `npm run build` | Build for production |
+| `npm run test:e2e` | Run Playwright E2E tests |
 
 ## Development Progress
 
@@ -126,93 +175,51 @@ Here's a chronological list of development steps and issues addressed:
      - Confirmation before task creation
      - Works on mobile and desktop devices
 
-## API Documentation
+## 🔌 API Documentation
+
+Base URL: `http://localhost:5001`
 
 ### Endpoints
 
-#### GET /health
-- Description: Health check endpoint to verify server is running
-- Response:
-```typescript
-{
-  status: "ok",
-  timestamp: string (ISO 8601 date)
-}
+#### `GET /health`
+Health check endpoint.
+```json
+{ "status": "ok", "timestamp": "2026-04-02T00:00:00Z" }
 ```
 
-#### GET /api/tasks
-- Description: Retrieve all tasks
-- Response: Array of Task objects
-```typescript
-[
-  {
-    id: number,
-    title: string,
-    completed: boolean,
-    createdAt: Date
-  }
-]
+#### `GET /api/tasks`
+Returns all tasks.
+```json
+[{ "id": 1, "title": "My task", "completed": false, "createdAt": "2026-04-02T..." }]
 ```
 
-#### GET /api/tasks/:id
-- Description: Retrieve a specific task by ID
-- Parameters:
-  - id: Task ID (number)
-- Response: Task object
-- Error: 404 if task not found
+#### `GET /api/tasks/:id`
+Returns a single task. Returns `404` if not found.
 
-#### POST /api/tasks
-- Description: Create a new task
-- Request Body:
-```typescript
-{
-  title: string
-}
+#### `POST /api/tasks`
+Creates a new task.
+```json
+// Request
+{ "title": "My new task" }
+
+// Response 201
+{ "id": 2, "title": "My new task", "completed": false, "createdAt": "2026-04-02T..." }
 ```
-- Response: Created Task object
-- Status Code: 201 Created
-- Validation: Title is required and cannot be empty
 
-#### PATCH /api/tasks/:id
-- Description: Toggle task completion status
-- Parameters: 
-  - id: Task ID (number)
-- Response: Updated Task object
-- Error: 404 if task not found
+#### `PATCH /api/tasks/:id`
+Toggles the completion status of a task. Returns `404` if not found.
 
-#### PUT /api/tasks/:id
-- Description: Update task properties (title and/or completed status)
-- Parameters:
-  - id: Task ID (number)
-- Request Body:
-```typescript
-{
-  title?: string,
-  completed?: boolean
-}
+#### `PUT /api/tasks/:id`
+Updates the `completed` field of a task.
+```json
+// Request
+{ "completed": true }
 ```
-- Response: Updated Task object
-- Error: 404 if task not found
 
-#### DELETE /api/tasks/:id
-- Description: Delete a specific task
-- Parameters:
-  - id: Task ID (number)
-- Response: 200 OK with success message
-```typescript
-{
-  message: "Task deleted successfully"
-}
-```
-- Error: 404 if task not found
-
-#### DELETE /api/tasks
-- Description: Clear all tasks (useful for testing)
-- Response: 200 OK with success message
-```typescript
-{
-  message: "All tasks cleared"
-}
+#### `DELETE /api/tasks/:id`
+Deletes a task. Returns `404` if not found.
+```json
+{ "message": "Task deleted successfully" }
 ```
 
 ## Component Documentation
@@ -347,62 +354,50 @@ npm run test:e2e:debug
 
 See [Testing Strategy](docs/TESTING_STRATEGY.md) for best practices and detailed guidelines.
 
-## Deployment
+## 🚢 Deployment
 
-### Frontend Deployment
-1. Build the production bundle:
+### Backend (ASP.NET Core)
+```bash
+cd backend/TaskApi
+dotnet publish -c Release -o ./publish
+```
+Deploy the `./publish` folder to Azure App Service, a Docker container, or any .NET-compatible host.
+
+### Frontend (React)
 ```bash
 cd frontend
 npm run build
 ```
-2. The build folder will contain optimized static files ready for deployment
+Deploy the `build/` folder to Azure Static Web Apps, Netlify, Vercel, or any static host.
 
-### Backend Deployment
-1. Build the TypeScript code:
-```bash
-cd backend
-npm run build
-```
-2. The dist folder will contain compiled JavaScript ready for deployment
-
-## Troubleshooting
+## 🔧 Troubleshooting
 
 ### "Failed to fetch" Error
 
-If you see a "Failed to fetch" error message when the application loads:
-
-1. **Make sure the backend server is running**: The backend must be started before the frontend can fetch data
+1. **Make sure the backend server is running:**
    ```bash
-   cd backend
-   npm run dev
+   cd backend/TaskApi
+   dotnet run --launch-profile http
    ```
 
-2. **Verify the backend is accessible**: Visit http://localhost:5000/health in your browser. You should see:
+2. **Verify the backend is accessible:** Visit http://localhost:5001/health — you should see:
    ```json
    {"status":"ok","timestamp":"..."}
    ```
 
-3. **Check if the port is already in use**: If you see "Port 5000 is already in use", stop the other process or change the port:
+3. **Check if the port is already in use:**
    ```bash
-   PORT=5001 npm run dev
+   lsof -i :5001
    ```
 
 ### Common Issues
 
-**Backend won't start**
-- Check if another process is using port 5000
-- Ensure you've run `npm install` in the backend directory
-- Check for TypeScript compilation errors
-
-**Frontend can't connect to backend**
-- Verify the backend is running on port 5000
-- Check that the proxy setting in `frontend/package.json` points to the correct backend URL
-- Clear your browser cache and restart the frontend server
-
-**Voice input not working**
-- Voice input requires a compatible browser (Chrome, Edge, or Safari)
-- Grant microphone permissions when prompted
-- Ensure the backend is running as voice input creates tasks via API
+| Problem | Solution |
+|---|---|
+| Backend won't start | Check if port 5001 is in use. Run `dotnet restore` first. |
+| Frontend can't connect | Verify backend is on port 5001 and `setupProxy.js` targets it |
+| .NET SDK not found | Install .NET 9 SDK from https://dotnet.microsoft.com/download |
+| Voice input not working | Use Chrome/Edge/Safari and grant microphone permission |
 
 ## License
 
