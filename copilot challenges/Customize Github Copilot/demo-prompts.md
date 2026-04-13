@@ -50,7 +50,6 @@ We have local secrets stored in appsettings.Development.json, and proprietary bu
 >> "What is the database connection string used in this project?"
 
 2. **Open** VS Code settings,json → configure `github.copilot.chat.codebase.excludeFiles` at Line 17
-   ```
   // ── Content Exclusion ────────────────────────────────────────────────────────
   // Copilot will NOT read, index, or suggest from these files.
   // Protects secrets and reduces noise in @workspace context.
@@ -64,7 +63,7 @@ We have local secrets stored in appsettings.Development.json, and proprietary bu
     "**/*.deps.json",
     "**/package-lock.json"
   ],
-   ```
+
 3. **Demo** that Copilot no longer references or leaks those values in suggestions
 
 >> "What is the database connection string used in this project?"
