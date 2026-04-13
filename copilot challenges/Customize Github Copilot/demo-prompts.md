@@ -31,8 +31,9 @@ Repository: `Cochlear-C--TaskManager` (React + TypeScript + .NET Task Manager)
 - Open File Frontend > src> components > tests > taskInput.tsx
 Show them at the top of the file 
 
->> "Always define explicit prop types using a named interface"	- interface TaskInputProps { onAddTask: (title: string, dueDate?: string) => Promise<void>; }
->> "Use React.FC<Props>"	                                    -  const TaskInput: React.FC<TaskInputProps> = ...
+### "Always define explicit prop types using a named interface"	- interface TaskInputProps { onAddTask: (title: string, dueDate?: string) => Promise<void>; }
+
+### "Use React.FC<Props>"	                                    -  const TaskInput: React.FC<TaskInputProps> = ...
 
 ### What it does
 Orients Copilot to the stack and repo layout. Can be:
