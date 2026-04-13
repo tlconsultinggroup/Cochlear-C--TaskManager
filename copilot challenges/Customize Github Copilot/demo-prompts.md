@@ -39,16 +39,31 @@ Orients Copilot to the stack and repo layout. Can be:
 ---
 
 ## 🔒 Scene 2: Sensitive Data Enters the Picture — Content Exclusion
-**Scenario:** The `appsettings.Development.json` contains local secrets and the `TaskApi/` folder has proprietary business logic your team doesn't want sent to Copilot.
+**Scenario:** At this point, our project contains sensitive data.
+We have local secrets stored in appsettings.Development.json, and proprietary business logic inside the TaskApi folder — both of which we don’t want Copilot to use when generating suggestions.
 
 ### Demo flow
 
-1. **Show** Copilot currently suggesting completions based on sensitive connection strings in `appsettings.Development.json`
-2. **Open** VS Code settings → configure `github.copilot.chat.codebase.excludeFiles` or use the GitHub org-level content exclusion policy to exclude:
+1. **Show** Copilot currently suggesting completions based on sensitive connection strings in Backend/TaskAPI/`appsettings.Development.json`
+**Demo** that Copilot references or leaks those values in suggestions
+
+>> "What is the database connection string used in this project?"
+
+2. **Open** VS Code settings,json → configure `github.copilot.chat.codebase.excludeFiles` at Line 17
    ```
-   **/appsettings*.json
-   **/bin/**
-   **/obj/**
+  // ── Content Exclusion ────────────────────────────────────────────────────────
+  // Copilot will NOT read, index, or suggest from these files.
+  // Protects secrets and reduces noise in @workspace context.
+  "github.copilot.chat.codebase.excludeFiles": [
+    "**/appsettings*.json",
+    "**/bin/**",
+    "**/obj/**",
+    "**/.env*",
+    "**/node_modules/**",
+    "**/*.pdb",
+    "**/*.deps.json",
+    "**/package-lock.json"
+  ],
    ```
 3. **Demo** that Copilot no longer references or leaks those values in suggestions
 
