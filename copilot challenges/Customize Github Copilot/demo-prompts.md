@@ -20,6 +20,7 @@ Repository: `Cochlear-C--TaskManager` (React + TypeScript + .NET Task Manager)
    - Follow REST naming conventions in the .NET API
 3. **Demo** 
 >> "Add a new React component called TaskItem that displays a task title and a toggle button to mark it complete."
+>> "Add new functionality that add a due date feature for each tasks"
 
 ## What to show:
 
