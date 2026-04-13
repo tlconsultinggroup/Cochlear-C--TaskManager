@@ -24,8 +24,8 @@ public class TasksControllerTests
     {
         var tasks = new List<TodoTask>
         {
-            new() { Id = 1, Title = "Task 1", Priority = TaskPriority.Low },
-            new() { Id = 2, Title = "Task 2", Priority = TaskPriority.High }
+            new() { Id = 1, Title = "Task 1" },
+            new() { Id = 2, Title = "Task 2" }
         };
         _mockService.Setup(s => s.GetAll()).Returns(tasks);
 
@@ -40,7 +40,7 @@ public class TasksControllerTests
     [Fact]
     public void GetById_WithValidId_Returns200WithTask()
     {
-        var task = new TodoTask { Id = 1, Title = "Lab results", Priority = TaskPriority.High };
+        var task = new TodoTask { Id = 1, Title = "Lab results" };
         _mockService.Setup(s => s.GetById(1)).Returns(task);
 
         var result = _sut.GetById(1);
@@ -65,8 +65,8 @@ public class TasksControllerTests
     public void Create_WithValidTitle_Returns201WithTask()
     {
         var request = new CreateTaskRequest("Prescription review");
-        var createdTask = new TodoTask { Id = 1, Title = "Prescription review", Priority = TaskPriority.Medium };
-        _mockService.Setup(s => s.Create(request.Title, It.IsAny<TaskPriority>())).Returns(createdTask);
+        var createdTask = new TodoTask { Id = 1, Title = "Prescription review" };
+        _mockService.Setup(s => s.Create(request.Title)).Returns(createdTask);
 
         var result = _sut.Create(request);
 

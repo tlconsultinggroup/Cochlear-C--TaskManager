@@ -40,22 +40,6 @@ public class TaskServiceTests
     }
 
     [Fact]
-    public void Create_DefaultPriority_IsMedium()
-    {
-        var task = _sut.Create("Follow-up appointment");
-
-        Assert.Equal(TaskPriority.Medium, task.Priority);
-    }
-
-    [Fact]
-    public void Create_WithHighPriority_SetsHighPriority()
-    {
-        var task = _sut.Create("URGENT: patient review", TaskPriority.High);
-
-        Assert.Equal(TaskPriority.High, task.Priority);
-    }
-
-    [Fact]
     public void Create_NewTask_IsNotCompleted()
     {
         var task = _sut.Create("Discharge notes");
@@ -156,41 +140,6 @@ public class TaskServiceTests
         var result = _sut.UpdateCompleted(999, true);
 
         Assert.Null(result);
-    }
-
-    // ── UpdatePriority ────────────────────────────────────────────────────────
-
-    [Fact]
-    public void UpdatePriority_WithValidId_ChangesPriority()
-    {
-        var task = _sut.Create("Routine check-up");
-
-        var updated = _sut.UpdatePriority(task.Id, TaskPriority.High);
-
-        Assert.NotNull(updated);
-        Assert.Equal(TaskPriority.High, updated.Priority);
-    }
-
-    [Fact]
-    public void UpdatePriority_WithInvalidId_ReturnsNull()
-    {
-        var result = _sut.UpdatePriority(999, TaskPriority.High);
-
-        Assert.Null(result);
-    }
-
-    [Theory]
-    [InlineData(TaskPriority.Low)]
-    [InlineData(TaskPriority.Medium)]
-    [InlineData(TaskPriority.High)]
-    public void UpdatePriority_AcceptsAllPriorityValues(TaskPriority priority)
-    {
-        var task = _sut.Create("Priority test task");
-
-        var updated = _sut.UpdatePriority(task.Id, priority);
-
-        Assert.NotNull(updated);
-        Assert.Equal(priority, updated.Priority);
     }
 
     // ── Delete ────────────────────────────────────────────────────────────────
