@@ -108,6 +108,12 @@ Demo:
 
 >> `/add-priority-field.prompt.md Use this prompt to implement a "Priority" field on tasks`
 
+## What to show:
+
+- Open backend/TaskApi/Models/Task.cs file and show side by side
+- Step 1: TaskPriority enum in Task.cs	public enum TaskPriority { Low=0, Medium=1, High=2 }   --->  Top of the file
+- Step 1: Property with default Medium	public TaskPriority Priority { get; set; } = TaskPriority.Medium;  -----> End of the file around line 18
+
 ### What happens behind the scenes
 
 When Copilot runs `add-priority-field.prompt.md`, it **simultaneously respects:**
