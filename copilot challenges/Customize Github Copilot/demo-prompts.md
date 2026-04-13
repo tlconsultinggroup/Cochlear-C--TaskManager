@@ -1,4 +1,4 @@
-# 🎬 GitHub Copilot Customization Demo — MedTask Case Study
+# 🎬 GitHub Copilot Customization Demo — Case Study
 
 **9 Scenes showcasing Copilot customization features**
 
@@ -18,7 +18,14 @@ Repository: `Cochlear-C--TaskManager` (React + TypeScript + .NET Task Manager)
    - Use async/await (never `.then().catch()`)
    - Never use `any`
    - Follow REST naming conventions in the .NET API
-3. **Show** Copilot completing code without vs. with the instructions — the difference in quality and alignment with your stack is immediate
+3. **Demo** 
+>> "Add a new React component called TaskItem that displays a task title and a toggle button to mark it complete."
+
+## What to show:
+
+- Without instructions → Copilot may generate a class component, use .then().catch(), use any for props, or skip ARIA labels.
+
+- With copilot-instructions.md active → Copilot generates a functional component with React.FC<TaskItemProps>, typed props interface, async/await, ARIA labels, and no any.
 
 ### What it does
 Orients Copilot to the stack and repo layout. Can be:
@@ -43,7 +50,14 @@ Orients Copilot to the stack and repo layout. Can be:
    **/bin/**
    **/obj/**
    ```
-3. **Demonstrate** that Copilot no longer references or leaks those values in suggestions
+3. **Demo** that Copilot no longer references or leaks those values in suggestions
+
+>> "What is the database connection string used in this project?"
+
+## What to show:
+
+- Before exclusion → Copilot reads appsettings.Development.json and surfaces the actual connection string values in its suggestion.
+- After excluding **/appsettings*.json → Copilot responds that it cannot find connection string details and suggests using environment variables instead.
 
 ### 💬 Talking point
 *"We can't afford accidental data leakage. Content exclusion is your compliance guardrail."*
@@ -67,6 +81,10 @@ Orients Copilot to the stack and repo layout. Can be:
 | **Attach explicitly** | Click 📎 attach button or type `#new-feature.prompt.md` |
 | **Direct invocation** | `Use this prompt to implement a "Priority" field on tasks` |
 | **With workspace** | `@workspace Use #add-priority-field.prompt.md to implement the Priority feature` |
+
+Demo:
+
+>> `/add-priority-field.prompt.md Use this prompt to implement a "Priority" field on tasks`
 
 ### What happens behind the scenes
 
@@ -100,9 +118,17 @@ When Copilot runs `add-priority-field.prompt.md`, it **simultaneously respects:*
 
 ### Demo
 
-1. Generate a new `TasksController.cs` method
-2. Generate a new `TaskList.tsx` component
-3. **Show** different suggestions for different paths
+1. Backend prompt (open TasksController.cs first):
+
+>> "Add a new endpoint to get a task by ID."
+
+→ Copilot should generate XML doc comments, nullable return types (TodoTask?), NotFound(new { error = "..." }), and file-scoped namespaces — because the backend path rule is active.
+
+2. Frontend prompt (open a file under components first):
+
+>> "Create a new TaskList component that renders a list of tasks."
+
+→ Copilot should generate React.FC<TaskListProps>, ARIA labels (aria-label, role="list"), useCallback on handlers, and a named props interface — because the frontend path rule is active.
 
 ### 💬 Talking point
 *"One codebase, two very different standards. Path-specific rules let Copilot context-switch automatically."*
@@ -114,38 +140,15 @@ When Copilot runs `add-priority-field.prompt.md`, it **simultaneously respects:*
 
 ### Demo flow — Two approaches for different workflows
 
-#### 🅰️ Approach A: MCP Tools (VS Code Agent Mode)
-**Use case:** *"During development, I ask Copilot to run my tests right here in the editor and tell me what's broken."*
-
-**Files created:**
-- `.vscode/mcp-tools/index.js` — Node.js MCP server with 4 tools
-- `.vscode/mcp.json` — registers the `medtask-tools` server
-- `.github/skills/run-tests/SKILL.md` — documents test patterns
-
-**Tools available:**
-1. `run_frontend_tests` — runs Jest, parses JSON output
-2. `run_backend_tests` — runs .NET xUnit, parses plain text
-3. `run_all_tests` — both in sequence
-4. `run_single_test_file` — targeted Jest run with pattern match
-
-**Demo it:**
-1. `Cmd+Shift+P` → `Developer: Reload Window`
-2. Open Copilot Chat → ask: *"Run the frontend tests and tell me what's failing"*
-3. Copilot invokes the MCP tool, gets results, narrates them
-
----
-
-#### 🅱️ Approach B: `.github/skills/` (GitHub Copilot Coding Agent)
-**Use case:** *"Once it's in GitHub, I assign the failing issue to the Coding Agent. It reads the skill, knows how to run our tests, and opens a PR — while I'm in a meeting."*
+####  Approach B: `.github/skills/` 
 
 **Files created:**
 - `.github/skills/run-tests/SKILL.md` — full runbook + failure pattern table
 - `.github/scripts/run-tests.sh` — bash script (works in CI too)
 
 **Demo it:**
-1. Create GitHub Issue: *"🧪 Tests failing after Priority field added — fix and add missing coverage"*
-2. Assign to `@copilot` (GitHub Copilot Coding Agent)
-3. Coding Agent reads `SKILL.md`, runs `.github/scripts/run-tests.sh`, fixes issues, opens PR
+1. Run Tests for the Priority field feature added — fix and add missing coverage
+2. Coding Agent reads `SKILL.md`, runs `.github/scripts/run-tests.sh`, fixes issues, opens PR
 
 ### 💬 Talking point
 *"Skills extend what Copilot can do — it's not just a code writer, it becomes an active participant in your CI loop."*
@@ -308,5 +311,4 @@ Before presenting, ensure:
 - [ ] All 15 frontend tests pass: `.github/scripts/run-tests.sh frontend`
 - [ ] `@compliance` agent appears in agent dropdown
 - [ ] MCP tools load without errors: `node -e "import('.vscode/mcp-tools/index.js')"`
-
 
