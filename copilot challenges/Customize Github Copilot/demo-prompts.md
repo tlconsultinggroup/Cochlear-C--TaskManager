@@ -27,6 +27,11 @@ Repository: `Cochlear-C--TaskManager` (React + TypeScript + .NET Task Manager)
 - Without instructions → Copilot may generate a class component, use .then().catch(), use any for props, or skip ARIA labels.
 
 - With copilot-instructions.md active → Copilot generates a functional component with React.FC<TaskItemProps>, typed props interface, async/await, ARIA labels, and no any.
+- Open File Frontend > src> components > tests > taskInput.tsx
+Show them at the top of the file 
+
+>> "Always define explicit prop types using a named interface"	- interface TaskInputProps { onAddTask: (title: string, dueDate?: string) => Promise<void>; }
+>> "Use React.FC<Props>"	                                    -  const TaskInput: React.FC<TaskInputProps> = ...
 
 ### What it does
 Orients Copilot to the stack and repo layout. Can be:
