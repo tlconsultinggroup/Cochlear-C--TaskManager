@@ -153,13 +153,13 @@ When Copilot runs `add-priority-field.prompt.md`, it **simultaneously respects:*
 
 1. Backend prompt (open TasksController.cs first):
 
->> "Add a new endpoint to get a task by ID."
+>> "Add a new endpoint to retrieve tasks created within the last 05 minutes."
 
 → Copilot should generate XML doc comments, nullable return types (TodoTask?), NotFound(new { error = "..." }), and file-scoped namespaces — because the backend path rule is active.
 
 2. Frontend prompt (open a file under components first):
 
->> "Create a new TaskList component that renders a list of tasks."
+>> "Create a new TaskSummary component that displays the count of completed vs total tasks."
 
 → Copilot should generate React.FC<TaskListProps>, ARIA labels (aria-label, role="list"), useCallback on handlers, and a named props interface — because the frontend path rule is active.
 
