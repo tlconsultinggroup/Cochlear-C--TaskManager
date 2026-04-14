@@ -89,6 +89,8 @@ We have local secrets stored in appsettings.Development.json, and proprietary bu
 ## 📝 Scene 3: Standardizing Feature Work — Prompt Files
 **Scenario:** The team frequently implements new API endpoints + React components. You want a repeatable, high-quality pattern for this.
 
+*"Prompt files are like reusable playbooks — when a specific situation comes up, you just pick the right playbook and follow it."*
+
 ### Demo flow
 
 **The reusable template** — works for any feature:
