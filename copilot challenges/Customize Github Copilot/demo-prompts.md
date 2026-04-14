@@ -18,7 +18,10 @@ Repository: `Cochlear-C--TaskManager` (React + TypeScript + .NET Task Manager)
    - Use async/await (never `.then().catch()`)
    - Never use `any`
    - Follow REST naming conventions in the .NET API
-3. **Demo** 
+  
+*“This is like your team’s DNA — it defines how things are always done, no matter who is working.”* 
+
+4. **Demo** 
 > "Add a new React component called TaskItem that displays a task title and a toggle button to mark it complete."
 
 > "Add new functionality that add a due date feature for each tasks"
