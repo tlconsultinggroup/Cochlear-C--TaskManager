@@ -24,7 +24,7 @@ function App() {
       setTasks(data);
     } catch (error) {
       console.error('Error fetching tasks:', error);
-      
+
       // Retry logic: retry up to 3 times with exponential backoff
       // This helps when backend is still initializing
       if (retryCount < 3) {
@@ -57,14 +57,14 @@ function App() {
         },
         body: JSON.stringify({ title }),
       });
-      
+
       const responseData = await response.json();
       console.log('Server response:', { status: response.status, data: responseData });
-      
+
       if (!response.ok) {
         throw new Error(responseData.error || 'Failed to add task');
       }
-      
+
       setTasks(prevTasks => [...prevTasks, responseData]);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to add task';
@@ -114,6 +114,11 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <img
+          src="/cochlear-logo.png"
+          alt="Cochlear logo"
+          className="App-cochlear-logo"
+        />
         <h1>Task Manager</h1>
       </header>
       <main className="App-main">
