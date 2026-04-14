@@ -167,57 +167,7 @@ Your skill should:
 
 ---
 
-## 🔌 Challenge 6: "Lack of Product Context"
-
-Developers don't know what to build next.
-Work is tracked outside the codebase.
-
-### 💬 Try
-
-```
-"What work items are currently active for this project?"
-```
-```
-"Which areas of the system are being modified most frequently?"
-```
-
-### 🔍 Observe
-
-- Does context improve decision-making?
-
----
-
-## 🛡️ Challenge 7: "Security Review Failure"
-
-A recent release exposed sensitive patient data due to missing validation.
-
-You need a dedicated reviewer.
-
-### 🧠 Your Task
-
-Create your own custom agent (security/compliance focus)
-
-### 💬 Try
-
-```
-"Audit this controller for potential security risks"
-```
-```
-"Check for missing validation and unsafe data handling"
-```
-
-### 🔍 Observe
-
-- Does it detect real issues?
-- Are recommendations actionable?
-
-### 👉 Bonus
-
-Trigger a fix workflow from your agent
-
----
-
-## 🎯 Challenge 8: "Unclear Prompts, Unclear Results"
+## 🎯 Challenge 6: "Unclear Prompts, Unclear Results"
 
 Developers are writing vague prompts → inconsistent output.
 
@@ -257,7 +207,6 @@ Now combine everything you've built:
 | ✅ Exclusions | Sensitive data protection |
 | ✅ Prompt files | Reusable feature templates |
 | ✅ Skills | Automated test workflows |
-| ✅ Agents | Security/compliance reviewer |
 
 ### 💬 Try
 
