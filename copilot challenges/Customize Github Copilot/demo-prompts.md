@@ -166,9 +166,11 @@ When Copilot runs `add-priority-field.prompt.md`, it **simultaneously respects:*
 ## 🛠️ Scene 5: Repetitive Expertise on Demand — Agent Skills
 **Scenario:** Your QA lead wants Copilot to automatically run tests and interpret results whenever a new component is created.
 
+**Example:** If prompts are one-time instructions, skills.md is like teaching Copilot a habit — whenever a situation comes up, it knows exactly what steps to follow.
+
 ### Demo flow — Two approaches for different workflows
 
-####  Approach B: `.github/skills/` 
+####  Approach: `.github/skills/` 
 
 **Files created:**
 - `.github/skills/run-tests/SKILL.md` — full runbook + failure pattern table
