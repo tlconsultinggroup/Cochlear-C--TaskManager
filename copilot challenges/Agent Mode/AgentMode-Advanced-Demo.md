@@ -1,0 +1,413 @@
+# MedTask — Advanced GitHub Copilot Demo Prompts
+
+> **How to read this file**
+> Each section shows: the **invocation method** (how to trigger it in VS Code),
+> the **files used** (what Copilot loads as context), and the **prompt text** to paste into chat.
+
+---
+
+## 1️⃣ Agent Mode — Prompts + Instructions + Skills
+
+> **How to invoke:** Open GitHub Copilot Chat → switch to **Agent mode** (dropdown next to the chat input)
+> **What Copilot loads automatically:**
+> - `.github/copilot-instructions.md` (global rules)
+> - `backend/.github/copilot-instructions.md` (C# rules — active when backend files are open)
+> - `frontend/.github/copilot-instructions.md` (React/TS rules — active when frontend files are open)
+> - `.github/skills/run-tests/SKILL.md` (test runner skill)
+
+---
+
+### Prompt 1 — Feature Addition (uses prompt file)
+
+> **Prompt file used:** `.github/prompts/add-priority-field.prompt.md`
+> **How to attach:** Type `/` in the chat input → select **add-priority-field** from the list
+> *(or paste the prompt below directly in Agent mode)*
+
+```
+Using the add-priority-field prompt file, add a "Priority" field (Low/Medium/High)
+to tasks. Update the model, service, controller, frontend component, and generate tests.
+Follow every step in the prompt file in order.
+```
+
+---
+
+### Prompt 2 — Code Review (uses prompt file)
+
+> **Prompt file used:** `.github/prompts/code-review.prompt.md`
+> **How to attach:** Type `/` → select **code-review**
+> **Open these files first** so Copilot has them in context:
+> `backend/TaskApi/Controllers/TasksController.cs` and `backend/TaskApi/Services/TaskService.cs`
+
+```
+Using the code-review prompt file, review TasksController.cs and TaskService.cs.
+Assign severity (Critical / High / Medium / Low) to each finding.
+Then automatically fix all Critical and High findings.
+```
+
+---
+
+### Prompt 3 — Refactor with Instructions
+
+> **How to invoke:** Agent mode — no prompt file needed, instructions auto-apply
+> **Copilot uses:** `.github/copilot-instructions.md` + `backend/.github/copilot-instructions.md`
+
+```
+@workspace Refactor TaskService to use the Repository pattern.
+Add an ITaskRepository interface and TaskRepository implementation in backend/TaskApi/Services/.
+Update DI registration in Program.cs.
+Follow all rules in the backend copilot instructions — XML doc comments, nullable types, file-scoped namespaces.
+```
+
+---
+
+### Prompt 4 — Test Generation (uses skill)
+
+> **How to invoke:** Agent mode — Copilot auto-discovers the skill
+> **Skill used:** `.github/skills/run-tests/SKILL.md`
+> **Prompt file used:** `.github/prompts/generate-tests.prompt.md`
+> **How to attach prompt file:** Type `/` → select **generate-tests**
+
+```
+Using the generate-tests prompt file, generate comprehensive unit tests for TaskService.cs.
+Cover: null inputs, empty lists, duplicate tasks, not-found cases.
+After generating, use the run-tests skill to run the suite and confirm all tests pass.
+```
+
+---
+
+## 2️⃣ MCP Servers
+
+> **How to invoke:** Agent mode with MCP tools active
+> **Setup:** MCP servers are configured in `.vscode/mcp.json`
+> **To enable:** Click the **Tools** button in the chat input → confirm the `github` and `medtask-tools` servers are toggled on
+> **GitHub MCP requires:** A GitHub PAT — VS Code will prompt for it on first use
+
+---
+
+### Prompt 1 — GitHub MCP: Analyse open issues
+
+> **MCP server used:** `github` (configured in `.vscode/mcp.json`)
+> **Tools called:** GitHub Issues API via MCP
+
+```
+Using the GitHub MCP server, list all open issues in the tlconsultinggroup/Cochlear-C--TaskManager repo.
+Prioritise them by impact (High / Medium / Low).
+Then implement the highest-priority issue end-to-end, following the rules in .github/skills/implement-github-issue/SKILL.md.
+```
+
+---
+
+### Prompt 2 — GitHub MCP: PR Review
+
+> **MCP server used:** `github`
+> **Tools called:** GitHub Pull Requests API via MCP
+
+```
+Using the GitHub MCP server, fetch the most recent open pull request in this repo.
+Review it against the rules in .github/copilot-instructions.md.
+Post inline review comments for any violations found.
+```
+
+---
+
+### Prompt 3 — Custom MCP Tool: Run tests
+
+> **MCP server used:** `medtask-tools` (local Node.js server in `.vscode/mcp-tools/`)
+> **Tools exposed:** run_frontend_tests · run_backend_tests · run_all_tests · run_single_test_file
+> **To verify it's running:** Tools button in chat → confirm `medtask-tools` is listed
+
+```
+Using the medtask-tools MCP server, run the full test suite (frontend + backend).
+Report the results: how many passed, how many failed, and which tests are failing.
+Then fix the first failing test and re-run to confirm it passes.
+```
+
+---
+
+### Prompt 4 — Custom MCP Tool: Targeted test run
+
+> **MCP server used:** `medtask-tools`
+
+```
+Using the medtask-tools MCP server, run only the TaskInput component tests.
+Show the pass/fail result, then add one missing edge-case test and re-run to confirm it passes.
+```
+
+---
+
+## 3️⃣ Coding Agent
+
+> **How to invoke:** Go to **GitHub.com → Issues** on this repo → assign the issue to **@copilot**
+> *(or use the "Assign to Copilot" button on any issue)*
+> **What Copilot loads:** `.github/copilot-setup-steps.yml` (installs dependencies) + all customisation files
+> **Skill used:** `.github/skills/implement-github-issue/SKILL.md` (guides the agent's full workflow)
+
+---
+
+### Prompt 1 — Full Stack Feature (assign as GitHub Issue)
+
+> **Create a GitHub Issue** with this title and body, then assign to @copilot:
+
+```
+Title: feat: Add Task Categories feature
+
+Build a complete "Task Categories" feature end-to-end:
+- C# Category model (Id, Name, Color) in backend/TaskApi/Models/
+- ICategoryService + CategoryService in backend/TaskApi/Services/
+- GET /api/categories and POST /api/categories endpoints
+- CategorySelector React component in frontend/src/components/
+- Link categories to tasks (update Task model, TaskInput, TaskList)
+- xUnit unit tests for CategoryService and the new controller actions
+- Jest unit tests for CategorySelector
+- Playwright E2E test: user can assign a category to a task
+- Update README.md with the new feature
+
+Follow .github/skills/implement-github-issue/SKILL.md throughout.
+```
+
+---
+
+### Prompt 2 — Bug Fix (assign as GitHub Issue)
+
+> **Create a GitHub Issue** with this title and body, then assign to @copilot:
+
+```
+Title: bug: Task list does not update immediately after deletion
+
+Steps to reproduce:
+1. Add two tasks
+2. Delete the first task
+3. The deleted task remains visible until page refresh
+
+Expected: task disappears instantly from the list
+Actual: task remains visible until manual refresh
+
+Follow .github/skills/implement-github-issue/SKILL.md.
+Include a regression test that fails before the fix and passes after.
+```
+
+---
+
+### Prompt 3 — Security Audit (assign as GitHub Issue)
+
+> **Create a GitHub Issue**, then assign to @copilot:
+
+```
+Title: chore: Security audit of TasksController
+
+Audit backend/TaskApi/Controllers/TasksController.cs for:
+- Missing input validation (empty/null title, invalid priority values)
+- Missing [Authorize] attributes (flag each unprotected endpoint)
+- Exposed sensitive data in error responses (stack traces, internal messages)
+- CORS misconfiguration in Program.cs
+
+Fix all Critical findings. Add unit tests for each validation rule added.
+Follow .github/skills/implement-github-issue/SKILL.md.
+```
+
+---
+
+## 4️⃣ Custom Agents
+
+> **How to invoke:** Open Copilot Chat → click the **agent picker dropdown** (top of chat panel)
+> → select the agent by name. Or type `@agent-name` in the chat input.
+> **Agent files location:** `.github/agents/`
+
+---
+
+### QA Agent (`@qa`)
+
+> **How to invoke:** Select **qa** from the agent dropdown, or type into chat after switching
+> **Agent file:** `.github/agents/qa.agent.md`
+> **Handoff available:** After QA finishes → click **"Run Compliance Check"** button to hand off to `@compliance`
+
+```
+Generate a full regression test suite for the task creation workflow.
+Use the Page Object Model pattern (see frontend/e2e/page-object-tests.spec.ts).
+Cover the happy path and 5 edge cases:
+1. Empty title (should be rejected)
+2. Title with only whitespace
+3. Very long title (200+ characters)
+4. Creating a task with each priority level (Low / Medium / High)
+5. Rapid double-submit (should not create duplicate)
+Reuse any existing helpers from frontend/e2e/helpers/.
+```
+
+---
+
+### DevOps Agent (`@devops`)
+
+> **How to invoke:** Select **devops** from the agent dropdown
+> **Agent file:** `.github/agents/devops.agent.md`
+> **Handoff available:** After DevOps finishes → click **"Run Compliance Check"** button
+
+```
+Create a complete GitHub Actions CI/CD pipeline that:
+- Runs xUnit backend tests on every PR
+- Runs Jest frontend tests on every PR
+- Runs Playwright E2E tests on every PR
+- Builds and pushes a Docker image on merge to main
+- Deploys to a staging environment on merge to main
+
+Follow all pipeline standards in your instructions.
+List all required GitHub Secrets at the end.
+```
+
+---
+
+### Compliance Agent (`@compliance`)
+
+> **How to invoke:** Select **compliance** from the agent dropdown
+> **Agent file:** `.github/agents/compliance.agent.md`
+> **Best used as:** The final step after any other agent completes work
+> *(or click the "Run Compliance Check" handoff button from `@qa` or `@devops`)*
+
+```
+Run a full compliance audit on all files changed in this session.
+Check against the full rulebook: TypeScript rules, React rules, C# rules, test rules, pipeline rules.
+Fix every violation you find.
+Produce the compliance report at the end.
+```
+
+---
+
+### Architecture Agent (inline in Agent mode)
+
+> **How to invoke:** Agent mode — no dedicated agent file, use inline persona instruction
+
+```
+@workspace You are a software architect reviewing the MedTask codebase.
+Propose a migration from the current single-service architecture to Domain-Driven Design (DDD).
+Output: a new proposed folder structure, an explanation of each domain boundary,
+and a proof-of-concept migration of TaskService.cs to the new structure.
+Do not change any files — produce the design document only.
+```
+
+---
+
+### 🤖 Orchestrated Agent Demo (`@orchestrator` → `@implementer` → `@qa` → `@compliance`)
+
+> **Agent files:** `.github/agents/orchestrator.agent.md` + `.github/agents/implementer.agent.md`
+> **How to run this demo:**
+> 1. Open Copilot Chat → select **orchestrator** from the agent dropdown
+> 2. Paste the prompt below and send it
+> 3. The orchestrator briefs the feature, then click **"🔨 Delegate to Implementer"**
+> 4. The implementer builds the feature end-to-end, then clicks **"Done — return to Orchestrator to verify"**
+> 5. The orchestrator reads the changed files and runs its verification checklist
+> 6. Once verified, click **"✅ Verified — Hand off to QA"**
+> 7. Quinn the QA agent generates unit tests + Playwright E2E tests
+> 8. Quinn clicks **"Run Compliance Check"** → Cora audits and fixes all violations
+
+```
+Orchestrate the delivery of this feature:
+"Add a dropdown to filter tasks by category (Work / Personal / Urgent)"
+
+Follow your full pipeline:
+1. Brief the Implementer with exactly what to build (backend + frontend)
+2. Delegate to the Implementer agent
+3. When the Implementer returns, verify the implementation using your checklist
+4. Only hand off to QA once verification passes
+```
+
+---
+
+## 5️⃣ Agent Orchestration / Workflow / Handoff
+
+> **How to invoke:** Select **orchestrator** from the agent dropdown
+> **Agent file:** `.github/agents/orchestrator.agent.md`
+> **Handoff buttons appear** after each step completes — click to move to the next agent
+
+---
+
+### Prompt 1 — Full Feature Pipeline (Due Date)
+
+> **Switch to `@orchestrator` agent, then send:**
+
+```
+Orchestrate the delivery of the "Task Due Date" feature end-to-end.
+
+What to build:
+- Backend: add a DueDate (DateTime?, nullable) property to Task.cs + ITaskService/TaskService
+- Backend: no new endpoint needed — DueDate is set/updated via the existing PUT action
+- Frontend: update types.ts to add dueDate?: string (ISO 8601)
+- Frontend: add a DueDateBadge component that displays the date with overdue highlighting
+- Frontend: update TaskInput to accept a date input for due date
+- Frontend: update TaskList to display the DueDateBadge on each task
+
+Follow your full pipeline:
+1. Brief the Implementer with exactly what to build
+2. Delegate to the Implementer agent
+3. When the Implementer returns, verify the implementation using your checklist
+4. Hand off to QA once verification passes
+```
+
+---
+
+### Prompt 2 — Handoff Pattern (Search feature)
+
+> **Start in Agent mode, then follow the handoff chain manually:**
+> 1. Send the prompt below in **Agent mode**
+> 2. When backend is done → switch to `@qa` agent and send the QA handoff prompt
+> 3. When tests are done → switch to `@compliance` and send the compliance prompt
+
+```
+Act as a backend engineer.
+Implement a task search endpoint: GET /api/tasks?search={query}
+- Filter tasks whose title contains the search string (case-insensitive)
+- Return empty array (not 404) when no tasks match
+- Follow all rules in backend/.github/copilot-instructions.md
+
+When done, summarise the files changed so the next engineer can pick up from here.
+```
+
+> **Then switch to `@qa` and send:**
+```
+The backend search endpoint is complete (GET /api/tasks?search={query}).
+Now implement the frontend:
+- Add a search bar component with debounced input (300ms) to App.tsx
+- Wire it up to the search endpoint
+- Follow all rules in frontend/.github/copilot-instructions.md
+Then write Playwright E2E tests for the full search flow end-to-end.
+```
+
+---
+
+### Prompt 3 — Review → Fix → Test Workflow
+
+> **Switch to `@compliance` agent, then send:**
+
+```
+Orchestrate this workflow on TasksController.cs:
+1. Review the file against the full compliance rulebook
+2. Fix all Critical and High violations in-place
+3. Identify which existing tests in TaskApi.Tests would now fail due to your changes
+4. Update those tests to match the fixed implementation
+5. Run the backend tests using the run-tests skill to confirm everything passes
+6. Produce a summary: what was broken, what was fixed, what tests were updated
+```
+
+---
+
+### Prompt 4 — Coding Agent via GitHub Issue (full autonomy)
+
+> **Go to GitHub Issues → create this issue → assign to @copilot**
+> The Coding Agent will use `.github/skills/implement-github-issue/SKILL.md` autonomously
+
+```
+Title: feat: Add task search with debounced UI
+
+Implement end-to-end task search for MedTask:
+
+Backend:
+- GET /api/tasks?search={query} — filter by title (case-insensitive), return [] if no match
+- Unit tests: happy path, empty result, case-insensitivity
+
+Frontend:
+- SearchBar component with debounced input (300ms delay)
+- Wire to the new endpoint, show loading state and error state
+- Unit test: SearchBar renders, debounce fires after 300ms, clears correctly
+- Playwright E2E: user types in search bar, results filter correctly
+
+Follow .github/skills/implement-github-issue/SKILL.md throughout.
+Open a PR with title: "feat: task search with debounced UI (closes #N)"
+```
