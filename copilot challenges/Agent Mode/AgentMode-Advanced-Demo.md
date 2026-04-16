@@ -118,8 +118,28 @@ Post inline review comments for any violations found.
 ```
 Using the GitHub MCP server, list all open issues in the tlconsultinggroup/Cochlear-C--TaskManager repo.
 ```
+---
+
+## Github CLI
+
+Lets trying GitHub CLI to interact with GitHub repositories through Github MCP directly from the terminal — allowing me to query issues, pull requests, and repository metadata using structured commands instead of the UI.
+### Prompt 1 — GitHub MCP: PR Review
+
+> npm install -g @github/copilot
+> copilot -i "list all open issues in this repo"
 
 ---
+
+### Prompt 2 — Playwright MCP: PR Review
+
+> **MCP server used:** `Playwright`
+> **Prompt**
+```
+copilot -i "Mock the /api/users endpoint so it returns [{ id: 1, name: 'Test User' }] for all GET requests"
+
+```
+---
+
 
 ## 3️⃣ Coding Agent
 
