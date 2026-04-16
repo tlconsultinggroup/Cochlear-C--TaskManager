@@ -46,35 +46,6 @@ Then automatically fix all Critical and High findings.
 
 ---
 
-### Prompt 3 — Refactor with Instructions
-
-> **How to invoke:** Agent mode — no prompt file needed, instructions auto-apply
-> **Copilot uses:** `.github/copilot-instructions.md` + `backend/.github/copilot-instructions.md`
-
-```
-@workspace Refactor TaskService to use the Repository pattern.
-Add an ITaskRepository interface and TaskRepository implementation in backend/TaskApi/Services/.
-Update DI registration in Program.cs.
-Follow all rules in the backend copilot instructions — XML doc comments, nullable types, file-scoped namespaces.
-```
-
----
-
-### Prompt 4 — Test Generation (uses skill)
-
-> **How to invoke:** Agent mode — Copilot auto-discovers the skill
-> **Skill used:** `.github/skills/run-tests/SKILL.md`
-> **Prompt file used:** `.github/prompts/generate-tests.prompt.md`
-> **How to attach prompt file:** Type `/` → select **generate-tests**
-
-```
-Using the generate-tests prompt file, generate comprehensive unit tests for TaskService.cs.
-Cover: null inputs, empty lists, duplicate tasks, not-found cases.
-After generating, use the run-tests skill to run the suite and confirm all tests pass.
-```
-
----
-
 ## 2️⃣ MCP Servers
 
 > **How to invoke:** Agent mode with MCP tools active
@@ -110,16 +81,6 @@ Post inline review comments for any violations found.
 
 ---
 
-### Prompt 1 — Playwright MCP: open a file and take a screenshot
-
-> **MCP server used:** `Playwright` (configured in `.vscode/mcp.json`)
-> **Tools called:** Ran Navigate to a URL
-
-```
-Using the GitHub MCP server, list all open issues in the tlconsultinggroup/Cochlear-C--TaskManager repo.
-```
----
-
 ## Github CLI
 
 Lets trying GitHub CLI to interact with GitHub repositories through Github MCP directly from the terminal — allowing me to query issues, pull requests, and repository metadata using structured commands instead of the UI.
@@ -140,105 +101,11 @@ copilot -i "Mock the /api/users endpoint so it returns [{ id: 1, name: 'Test Use
 ```
 ---
 
-
-## 3️⃣ Coding Agent
-
-> **How to invoke:** Go to **GitHub.com → Issues** on this repo → assign the issue to **@copilot**
-> *(or use the "Assign to Copilot" button on any issue)*
-> **What Copilot loads:** `.github/copilot-setup-steps.yml` (installs dependencies) + all customisation files
-> **Skill used:** `.github/skills/implement-github-issue/SKILL.md` (guides the agent's full workflow)
-
----
-
-### Prompt 1 — Full Stack Feature (assign as GitHub Issue)
-
-> **Create a GitHub Issue** with this title and body, then assign to @copilot:
-
-```
-Title: feat: Add Task Categories feature
-
-Build a complete "Task Categories" feature end-to-end:
-- C# Category model (Id, Name, Color) in backend/TaskApi/Models/
-- ICategoryService + CategoryService in backend/TaskApi/Services/
-- GET /api/categories and POST /api/categories endpoints
-- CategorySelector React component in frontend/src/components/
-- Link categories to tasks (update Task model, TaskInput, TaskList)
-- xUnit unit tests for CategoryService and the new controller actions
-- Jest unit tests for CategorySelector
-- Playwright E2E test: user can assign a category to a task
-- Update README.md with the new feature
-
-Follow .github/skills/implement-github-issue/SKILL.md throughout.
-```
-
----
-
-### Prompt 2 — Bug Fix (assign as GitHub Issue)
-
-> **Create a GitHub Issue** with this title and body, then assign to @copilot:
-
-```
-Title: bug: Task list does not update immediately after deletion
-
-Steps to reproduce:
-1. Add two tasks
-2. Delete the first task
-3. The deleted task remains visible until page refresh
-
-Expected: task disappears instantly from the list
-Actual: task remains visible until manual refresh
-
-Follow .github/skills/implement-github-issue/SKILL.md.
-Include a regression test that fails before the fix and passes after.
-```
-
----
-
 ## 4️⃣ Custom Agents
 
 > **How to invoke:** Open Copilot Chat → click the **agent picker dropdown** (top of chat panel)
 > → select the agent by name. Or type `@agent-name` in the chat input.
 > **Agent files location:** `.github/agents/`
-
----
-
-### QA Agent (`@qa`)
-
-> **How to invoke:** Select **qa** from the agent dropdown, or type into chat after switching
-> **Agent file:** `.github/agents/qa.agent.md`
-> **Handoff available:** After QA finishes → click **"Run Compliance Check"** button to hand off to `@compliance`
-
-```
-Generate a full regression test suite for the task creation workflow.
-Use the Page Object Model pattern (see frontend/e2e/page-object-tests.spec.ts).
-Cover the happy path and 5 edge cases:
-1. Empty title (should be rejected)
-2. Title with only whitespace
-3. Very long title (200+ characters)
-4. Creating a task with each priority level (Low / Medium / High)
-5. Rapid double-submit (should not create duplicate)
-Reuse any existing helpers from frontend/e2e/helpers/.
-```
-
----
-
-### DevOps Agent (`@devops`)
-
-> **How to invoke:** Select **devops** from the agent dropdown
-> **Agent file:** `.github/agents/devops.agent.md`
-> **Handoff available:** After DevOps finishes → click **"Run Compliance Check"** button
-
-```
-Create a complete GitHub Actions CI/CD pipeline that:
-- Runs xUnit backend tests on every PR
-- Runs Jest frontend tests on every PR
-- Runs Playwright E2E tests on every PR
-- Builds and pushes a Docker image on merge to main
-- Deploys to a staging environment on merge to main
-
-Follow all pipeline standards in your instructions.
-List all required GitHub Secrets at the end.
-```
 
 ---
 
@@ -254,20 +121,6 @@ Run a full compliance audit on all files changed in this session.
 Check against the full rulebook: TypeScript rules, React rules, C# rules, test rules, pipeline rules.
 Fix every violation you find.
 Produce the compliance report at the end.
-```
-
----
-
-### Architecture Agent (inline in Agent mode)
-
-> **How to invoke:** Agent mode — no dedicated agent file, use inline persona instruction
-
-```
-@workspace You are a software architect reviewing the MedTask codebase.
-Propose a migration from the current single-service architecture to Domain-Driven Design (DDD).
-Output: a new proposed folder structure, an explanation of each domain boundary,
-and a proof-of-concept migration of TaskService.cs to the new structure.
-Do not change any files — produce the design document only.
 ```
 
 ---
@@ -374,27 +227,3 @@ Orchestrate this workflow on TasksController.cs:
 ```
 
 ---
-
-### Prompt 4 — Coding Agent via GitHub Issue (full autonomy)
-
-> **Go to GitHub Issues → create this issue → assign to @copilot**
-> The Coding Agent will use `.github/skills/implement-github-issue/SKILL.md` autonomously
-
-```
-Title: feat: Add task search with debounced UI
-
-Implement end-to-end task search for MedTask:
-
-Backend:
-- GET /api/tasks?search={query} — filter by title (case-insensitive), return [] if no match
-- Unit tests: happy path, empty result, case-insensitivity
-
-Frontend:
-- SearchBar component with debounced input (300ms delay)
-- Wire to the new endpoint, show loading state and error state
-- Unit test: SearchBar renders, debounce fires after 300ms, clears correctly
-- Playwright E2E: user types in search bar, results filter correctly
-
-Follow .github/skills/implement-github-issue/SKILL.md throughout.
-Open a PR with title: "feat: task search with debounced UI (closes #N)"
-```
