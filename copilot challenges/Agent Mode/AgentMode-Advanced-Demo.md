@@ -25,7 +25,7 @@
 
 ```
 Using the add-priority-field prompt file, add a "Priority" field (Low/Medium/High)
-to tasks. Update the model, service, controller, frontend component, and generate tests.
+to tasks. Update the model, service, controller and frontend component.
 Follow every step in the prompt file in order.
 ```
 
@@ -110,27 +110,13 @@ Post inline review comments for any violations found.
 
 ---
 
-### Prompt 3 — Custom MCP Tool: Run tests
+### Prompt 1 — Playwright MCP: open a file and take a screenshot
 
-> **MCP server used:** `medtask-tools` (local Node.js server in `.vscode/mcp-tools/`)
-> **Tools exposed:** run_frontend_tests · run_backend_tests · run_all_tests · run_single_test_file
-> **To verify it's running:** Tools button in chat → confirm `medtask-tools` is listed
-
-```
-Using the medtask-tools MCP server, run the full test suite (frontend + backend).
-Report the results: how many passed, how many failed, and which tests are failing.
-Then fix the first failing test and re-run to confirm it passes.
-```
-
----
-
-### Prompt 4 — Custom MCP Tool: Targeted test run
-
-> **MCP server used:** `medtask-tools`
+> **MCP server used:** `Playwright` (configured in `.vscode/mcp.json`)
+> **Tools called:** Ran Navigate to a URL
 
 ```
-Using the medtask-tools MCP server, run only the TaskInput component tests.
-Show the pass/fail result, then add one missing edge-case test and re-run to confirm it passes.
+Using the GitHub MCP server, list all open issues in the tlconsultinggroup/Cochlear-C--TaskManager repo.
 ```
 
 ---
@@ -184,25 +170,6 @@ Actual: task remains visible until manual refresh
 
 Follow .github/skills/implement-github-issue/SKILL.md.
 Include a regression test that fails before the fix and passes after.
-```
-
----
-
-### Prompt 3 — Security Audit (assign as GitHub Issue)
-
-> **Create a GitHub Issue**, then assign to @copilot:
-
-```
-Title: chore: Security audit of TasksController
-
-Audit backend/TaskApi/Controllers/TasksController.cs for:
-- Missing input validation (empty/null title, invalid priority values)
-- Missing [Authorize] attributes (flag each unprotected endpoint)
-- Exposed sensitive data in error responses (stack traces, internal messages)
-- CORS misconfiguration in Program.cs
-
-Fix all Critical findings. Add unit tests for each validation rule added.
-Follow .github/skills/implement-github-issue/SKILL.md.
 ```
 
 ---
