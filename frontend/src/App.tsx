@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import TaskInput from './components/TaskInput';
 import TaskList from './components/TaskList';
+import ExportButton from './components/ExportButton';
 import { Task } from './types';
 import './App.css';
 
@@ -128,6 +129,7 @@ function App() {
           </div>
         )}
         <TaskInput onAddTask={addTask} />
+        <ExportButton tasks={tasks} />
         {loading ? (
           <div className="loading">Loading tasks...</div>
         ) : (
