@@ -6,14 +6,14 @@ module.exports = function(app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'http://localhost:5001',
+      target: 'http://localhost:5000',
       changeOrigin: true,
       // Use logger instead of deprecated logLevel
       logger: console,
       // Event handlers for monitoring proxy activity
       on: {
         proxyReq: (proxyReq, req, res) => {
-          console.log(`[Proxy] ${req.method} ${req.url} -> http://localhost:5001${req.url}`);
+          console.log(`[Proxy] ${req.method} ${req.url} -> http://localhost:5000${req.url}`);
         },
         proxyRes: (proxyRes, req, res) => {
           console.log(`[Proxy] Response ${proxyRes.statusCode} for ${req.url}`);
@@ -28,7 +28,7 @@ module.exports = function(app) {
           res.end(JSON.stringify({ 
             error: 'Proxy error',
             message: err.message,
-            backend: 'http://localhost:5001'
+            backend: 'http://localhost:5000'
           }));
         }
       }

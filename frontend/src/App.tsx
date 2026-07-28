@@ -4,6 +4,16 @@ import TaskList from './components/TaskList';
 import { Task } from './types';
 import './App.css';
 
+const parseApiResponse = async <T,>(response: Response): Promise<T> => {
+  const contentType = response.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    return response.json() as Promise<T>;
+  }
+
+  const text = await response.text();
+  throw new Error(text || 'Backend returned a non-JSON response');
+};
+
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -18,9 +28,10 @@ function App() {
     try {
       const response = await fetch(`${API_URL}/tasks`);
       if (!response.ok) {
-        throw new Error('Failed to fetch tasks');
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to fetch tasks');
       }
-      const data = await response.json();
+      const data = await parseApiResponse<Task[]>(response);
       setTasks(data);
     } catch (error) {
       console.error('Error fetching tasks:', error);
@@ -58,12 +69,13 @@ function App() {
         body: JSON.stringify({ title }),
       });
 
-      const responseData = await response.json();
-      console.log('Server response:', { status: response.status, data: responseData });
-
       if (!response.ok) {
-        throw new Error(responseData.error || 'Failed to add task');
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to add task');
       }
+
+      const responseData = await parseApiResponse<Task>(response);
+      console.log('Server response:', { status: response.status, data: responseData });
 
       setTasks(prevTasks => [...prevTasks, responseData]);
     } catch (error) {
@@ -83,9 +95,10 @@ function App() {
         }
       });
       if (!response.ok) {
-        throw new Error('Failed to toggle task');
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to toggle task');
       }
-      const updatedTask = await response.json();
+      const updatedTask = await parseApiResponse<Task>(response);
       setTasks(prevTasks => prevTasks.map(task =>
         task.id === id ? updatedTask : task
       ));
