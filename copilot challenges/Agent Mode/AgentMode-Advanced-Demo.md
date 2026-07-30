@@ -61,7 +61,7 @@ Then automatically fix all Critical and High findings.
 > **Tools called:** GitHub Issues API via MCP
 
 ```
-Using the GitHub MCP server, list all open issues in the tlconsultinggroup/Cochlear-C--TaskManager repo.
+Using the GitHub MCP server, list all open issues in the tlconsultinggroup/TaskManager-Copilot-Lab repo.
 Prioritise them by impact (High / Medium / Low).
 Then implement the highest-priority issue end-to-end, following the rules in .github/skills/implement-github-issue/SKILL.md.
 ```

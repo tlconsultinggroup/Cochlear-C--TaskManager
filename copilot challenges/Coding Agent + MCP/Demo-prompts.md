@@ -46,7 +46,7 @@ After the Coding Agent opens a PR, prompt Copilot Chat:
 
 **Prompt Copilot Chat:**
 ```
-Review all open issues in tlconsultinggroup/Cochlear-C--TaskManager.
+Review all open issues in tlconsultinggroup/TaskManager-Copilot-Lab.
 For each issue, apply appropriate labels from: bug, feature, enhancement,
 urgent, in-progress, needs-review. Base the label on the issue title and description.
 ```

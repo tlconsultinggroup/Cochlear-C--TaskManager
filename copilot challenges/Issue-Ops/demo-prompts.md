@@ -32,7 +32,7 @@ Use the GitLab MCP to list all open issues in the project and ask Copilot to ran
 
 **Prompt:**
 ```
-Using the GitLab MCP, list all open issues in vans23/cochlear-c-taskmanager and rank them from most to least urgent based on their title, description, and labels.
+Using the GitLab MCP, list all open issues in vans23/taskmanager-copilot-lab and rank them from most to least urgent based on their title, description, and labels.
 ```
 
 Copilot will call `mcp_gitlab_list_issues` and return a ranked list with reasoning for each priority.
@@ -51,7 +51,7 @@ The **Feature Planner** agent (`@feature-planner`) automates the journey from a 
 | 2 | Explores the codebase — checks `types.ts`, `App.tsx`, components, controllers, services, and tests |
 | 3 | Generates `docs/<feature-name>-plan.md` with affected files, implementation steps, and acceptance criteria |
 | 4 | Displays the plan and shows an **APPROVE** prompt |
-| 5a | On `"approve"` → creates a GitLab issue in `vans23/cochlear-c-taskmanager` via the GitLab MCP (`mcp_gitlab_create_issue`) |
+| 5a | On `"approve"` → creates a GitLab issue in `vans23/taskmanager-copilot-lab` via the GitLab MCP (`mcp_gitlab_create_issue`) |
 | 5b | On `"revise: <feedback>"` → updates the plan and loops back |
 
 **Models:** Claude Opus 4.5 → GPT-5.2 (fallback)  
@@ -92,7 +92,7 @@ The **Engineering** agent (`@Engineering`) picks up a GitLab issue and implement
 ### Demo prompt
 
 ```
-@Engineering https://gitlab.com/vans23/cochlear-c-taskmanager/-/work_items/4
+@Engineering https://gitlab.com/vans23/taskmanager-copilot-lab/-/work_items/4
 ```
 
 ---

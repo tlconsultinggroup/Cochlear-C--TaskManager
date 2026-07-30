@@ -12,7 +12,7 @@
 The project has multiple open GitLab issues. You have no ranked list, no priority labels, and no instructions on what matters most.
 
 **Your challenge:**
-Using only Copilot and the GitLab MCP, produce a **prioritised implementation roadmap** for the `vans23/cochlear-c-taskmanager` project. Your roadmap must:
+Using only Copilot and the GitLab MCP, produce a **prioritised implementation roadmap** for the `vans23/taskmanager-copilot-lab` project. Your roadmap must:
 
 - Rank all open issues from most to least urgent
 - Justify each ranking using evidence from the issue description AND the codebase (not just labels)
@@ -91,7 +91,7 @@ Design and implement an `.agent.md` that automatically assigns GitLab issues to 
 
 **Requirements your agent must satisfy:**
 
-- Given a list of open, unassigned issues in `vans23/cochlear-c-taskmanager`, the agent analyses each issue and assigns it to the most appropriate team member based on:
+- Given a list of open, unassigned issues in `vans23/taskmanager-copilot-lab`, the agent analyses each issue and assigns it to the most appropriate team member based on:
   - Labels (`frontend`, `backend`, `feature`, `bug`, etc.)
   - Keywords in the issue description (e.g. "C#", "React", "CSV", "database")
   - Logical rules you define in the agent's instructions

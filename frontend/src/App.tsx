@@ -128,9 +128,9 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img
-          src="/cochlear-logo.png"
-          alt="Cochlear logo"
-          className="App-cochlear-logo"
+          src="/tlconsulting-logo.png"
+          alt="TLC Consulting logo"
+          className="App-brand-logo"
         />
         <h1>Task Manager</h1>
       </header>

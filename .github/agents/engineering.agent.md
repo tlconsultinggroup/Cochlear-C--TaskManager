@@ -1,9 +1,9 @@
 ---
 name: "Engineering"
-description: "Use when given a GitLab issue URL or issue ID to implement. Trigger phrases: implement issue, build this issue, work on issue, pick up issue, fix gitlab issue, implement feature from issue, gitlab.com work_items, cochlear-c-taskmanager issue. Fetches issue details from GitLab MCP, implements the feature across frontend and backend, runs tests, then hands off to code review."
+description: "Use when given a GitLab issue URL or issue ID to implement. Trigger phrases: implement issue, build this issue, work on issue, pick up issue, fix gitlab issue, implement feature from issue, gitlab.com work_items, taskmanager-copilot-lab issue. Fetches issue details from GitLab MCP, implements the feature across frontend and backend, runs tests, then hands off to code review."
 tools: [read, search, edit, execute, todo, gitlab/*]
 model: ['Claude Opus 4.5 (copilot)', 'GPT-5.2 (copilot)']
-argument-hint: "Paste a GitLab issue URL or issue number, e.g. https://gitlab.com/vans23/cochlear-c-taskmanager/-/work_items/4"
+argument-hint: "Paste a GitLab issue URL or issue number, e.g. https://gitlab.com/vans23/taskmanager-copilot-lab/-/work_items/4"
 handoffs: [review]
 ---
 
@@ -25,7 +25,7 @@ Extract the issue number from the URL or input provided. GitLab work item URLs f
 `https://gitlab.com/<namespace>/<project>/-/work_items/<issue_number>`
 
 Call **`mcp_gitlab_get_issue`** (NOT `create_issue`, NOT `create_or_update_file`) with:
-- `project_id`: `vans23/cochlear-c-taskmanager`
+- `project_id`: `vans23/taskmanager-copilot-lab`
 - `issue_iid`: the integer issue number extracted from the URL
 
 Display to the user:

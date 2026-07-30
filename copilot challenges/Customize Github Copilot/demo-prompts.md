@@ -2,7 +2,7 @@
 
 **9 Scenes showcasing Copilot customization features**
 
-Repository: `Cochlear-C--TaskManager` (React + TypeScript + .NET Task Manager)
+Repository: `TaskManager-Copilot-Lab` (React + TypeScript + .NET Task Manager)
 
 ---
 

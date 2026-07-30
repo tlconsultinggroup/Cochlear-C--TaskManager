@@ -120,7 +120,7 @@ If the verdict is `✅ APPROVED` or `⚠️ APPROVED WITH WARNINGS`, proceed to 
 ### Step 5 — Create a GitLab Merge Request (approved verdicts only)
 
 Call **`mcp_gitlab_create_merge_request`** (NOT `create_issue`, NOT `create_or_update_file`) with:
-- `project_id`: `vans23/cochlear-c-taskmanager`
+- `project_id`: `vans23/taskmanager-copilot-lab`
 - `source_branch`: the feature branch the Engineering agent worked on (ask if not known — default to `feature/<kebab-case-feature-name>`)
 - `target_branch`: `main`
 - `title`: `feat: <feature title from the GitLab issue>`
