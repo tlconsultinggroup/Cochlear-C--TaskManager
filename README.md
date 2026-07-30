@@ -1,4 +1,4 @@
-# Cochlear Task Manager
+# Task Manager Application
 
 A full-stack Task Management application built with an **ASP.NET Core (C#) REST API** backend and a **React TypeScript** frontend.
 
