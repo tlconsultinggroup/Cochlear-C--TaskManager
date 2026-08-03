@@ -6,4 +6,5 @@ public class TodoTask
     public string Title { get; set; } = string.Empty;
     public bool Completed { get; set; }
     public DateTime CreatedAt { get; set; }
+    public DateTime? DueDate { get; set; }
 }

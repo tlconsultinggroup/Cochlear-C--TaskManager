@@ -101,6 +101,33 @@
   text-align: left;
 }
 
+.task-item__details {
+  flex-grow: 1;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.task-item__due-date {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.task-item__overdue-badge {
+  font-size: 0.75rem;
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 12px;
+  padding: 2px 8px;
+  width: fit-content;
+}
+
+.task-item.overdue .task-item__title {
+  color: #b02a37;
+}
+
 .task-item__delete {
   padding: 6px 12px;
   background-color: #dc3545;
