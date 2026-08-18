@@ -57,16 +57,16 @@ function App() {
     fetchTasks();
   }, [fetchTasks]);
 
-  const addTask = async (title: string) => {
+  const addTask = async (title: string, dueDate?: string) => {
     setError(null);
     try {
-      console.log('Sending request to add task:', { title });
+      console.log('Sending request to add task:', { title, dueDate });
       const response = await fetch(`${API_URL}/tasks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ title }),
+        body: JSON.stringify({ title, dueDate: dueDate ?? null }),
       });
 
       if (!response.ok) {

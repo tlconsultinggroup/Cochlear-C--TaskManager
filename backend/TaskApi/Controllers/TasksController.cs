@@ -38,7 +38,7 @@ public class TasksController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.Title))
             return BadRequest(new { error = "Title is required" });
 
-        var task = _taskService.Create(request.Title);
+        var task = _taskService.Create(request.Title, request.DueDate);
         return CreatedAtAction(nameof(GetById), new { id = task.Id }, task);
     }
 
@@ -62,6 +62,16 @@ public class TasksController : ControllerBase
         return Ok(task);
     }
 
+    // PATCH /api/tasks/{id}/duedate
+    [HttpPatch("{id}/duedate")]
+    public IActionResult UpdateDueDate(int id, [FromBody] UpdateDueDateRequest request)
+    {
+        var task = _taskService.UpdateDueDate(id, request.DueDate);
+        if (task == null)
+            return NotFound(new { error = "Task not found" });
+        return Ok(task);
+    }
+
     // DELETE /api/tasks/{id}
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
@@ -73,5 +83,6 @@ public class TasksController : ControllerBase
     }
 }
 
-public record CreateTaskRequest(string Title);
+public record CreateTaskRequest(string Title, DateTime? DueDate);
 public record UpdateTaskRequest(bool Completed);
+public record UpdateDueDateRequest(DateTime? DueDate);

@@ -13,6 +13,7 @@ describe('TaskInput Component', () => {
         render(<TaskInput onAddTask={mockOnAddTask} />);
         
         expect(screen.getByPlaceholderText('Add a new task...')).toBeInTheDocument();
+        expect(screen.getByLabelText('Due date')).toBeInTheDocument();
         expect(screen.getByText('Add Task')).toBeInTheDocument();
     });
 
@@ -23,7 +24,9 @@ describe('TaskInput Component', () => {
         fireEvent.click(button);
         
         expect(mockOnAddTask).not.toHaveBeenCalled();
-    });    it('handles valid task submission', async () => {
+    });
+
+    it('handles valid task submission', async () => {
         render(<TaskInput onAddTask={mockOnAddTask} />);
         
         const input = screen.getByPlaceholderText('Add a new task...');
@@ -36,11 +39,27 @@ describe('TaskInput Component', () => {
             fireEvent.click(button);
         });
         
-        expect(mockOnAddTask).toHaveBeenCalledWith('New Task');
+        expect(mockOnAddTask).toHaveBeenCalledWith('New Task', undefined);
         await act(async () => {
             // Wait for state update
             await Promise.resolve();
         });
         expect(input).toHaveValue('');
+    });
+
+    it('submits due date when provided', async () => {
+        render(<TaskInput onAddTask={mockOnAddTask} />);
+
+        const titleInput = screen.getByPlaceholderText('Add a new task...');
+        const dueDateInput = screen.getByLabelText('Due date');
+        const button = screen.getByText('Add Task');
+
+        await act(async () => {
+            fireEvent.change(titleInput, { target: { value: 'Task with due date' } });
+            fireEvent.change(dueDateInput, { target: { value: '2030-01-15' } });
+            fireEvent.click(button);
+        });
+
+        expect(mockOnAddTask).toHaveBeenCalledWith('Task with due date', '2030-01-15');
     });
 });

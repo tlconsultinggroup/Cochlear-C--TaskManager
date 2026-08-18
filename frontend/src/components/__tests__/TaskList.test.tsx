@@ -9,13 +9,15 @@ describe('TaskList Component', () => {
             id: 1,
             title: 'Test Task 1',
             completed: false,
-            createdAt: new Date()
+            createdAt: new Date().toISOString(),
+            dueDate: '2000-01-01T00:00:00.000Z'
         },
         {
             id: 2,
             title: 'Test Task 2',
             completed: true,
-            createdAt: new Date()
+            createdAt: new Date().toISOString(),
+            dueDate: '2099-12-31T00:00:00.000Z'
         }
     ];
 
@@ -81,5 +83,20 @@ describe('TaskList Component', () => {
 
         const completedTaskContainer = screen.getByText('Test Task 2').closest('li');
         expect(completedTaskContainer).toHaveClass('completed');
+    });
+
+    it('displays due date and overdue badge for overdue incomplete tasks', () => {
+        render(
+            <TaskList
+                tasks={mockTasks}
+                onToggleTask={mockOnToggleTask}
+                onDeleteTask={mockOnDeleteTask}
+            />
+        );
+
+        expect(screen.getAllByText(/Due:/i).length).toBeGreaterThan(0);
+        expect(screen.getByText('Overdue')).toBeInTheDocument();
+        const overdueTaskContainer = screen.getByText('Test Task 1').closest('li');
+        expect(overdueTaskContainer).toHaveClass('overdue');
     });
 });

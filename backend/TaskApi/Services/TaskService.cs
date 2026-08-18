@@ -11,14 +11,15 @@ public class TaskService : ITaskService
 
     public TodoTask? GetById(int id) => _tasks.FirstOrDefault(t => t.Id == id);
 
-    public TodoTask Create(string title)
+    public TodoTask Create(string title, DateTime? dueDate = null)
     {
         var task = new TodoTask
         {
             Id = _nextId++,
             Title = title,
             Completed = false,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            DueDate = dueDate
         };
         _tasks.Add(task);
         return task;
@@ -29,6 +30,14 @@ public class TaskService : ITaskService
         var task = GetById(id);
         if (task == null) return null;
         task.Completed = completed;
+        return task;
+    }
+
+    public TodoTask? UpdateDueDate(int id, DateTime? dueDate)
+    {
+        var task = GetById(id);
+        if (task == null) return null;
+        task.DueDate = dueDate;
         return task;
     }
 

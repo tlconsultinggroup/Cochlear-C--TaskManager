@@ -64,9 +64,9 @@ public class TasksControllerTests
     [Fact]
     public void Create_WithValidTitle_Returns201WithTask()
     {
-        var request = new CreateTaskRequest("Prescription review");
+        var request = new CreateTaskRequest("Prescription review", null);
         var createdTask = new TodoTask { Id = 1, Title = "Prescription review" };
-        _mockService.Setup(s => s.Create(request.Title)).Returns(createdTask);
+        _mockService.Setup(s => s.Create(request.Title, request.DueDate)).Returns(createdTask);
 
         var result = _sut.Create(request);
 
@@ -78,7 +78,7 @@ public class TasksControllerTests
     [Fact]
     public void Create_WithEmptyTitle_Returns400()
     {
-        var request = new CreateTaskRequest("");
+        var request = new CreateTaskRequest("", null);
 
         var result = _sut.Create(request);
 
@@ -88,11 +88,25 @@ public class TasksControllerTests
     [Fact]
     public void Create_WithWhitespaceTitle_Returns400()
     {
-        var request = new CreateTaskRequest("   ");
+        var request = new CreateTaskRequest("   ", null);
 
         var result = _sut.Create(request);
 
         Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public void Create_WithDueDate_PassesDueDateToService()
+    {
+        var dueDate = DateTime.UtcNow.AddDays(5);
+        var request = new CreateTaskRequest("Task with due date", dueDate);
+        var createdTask = new TodoTask { Id = 1, Title = "Task with due date", DueDate = dueDate };
+        _mockService.Setup(s => s.Create(request.Title, request.DueDate)).Returns(createdTask);
+
+        var result = _sut.Create(request);
+
+        var created = Assert.IsType<CreatedAtActionResult>(result);
+        Assert.Equal(createdTask, created.Value);
     }
 
     // ── PUT /api/tasks/{id} ───────────────────────────────────────────────────
@@ -140,6 +154,32 @@ public class TasksControllerTests
         _mockService.Setup(s => s.Toggle(999)).Returns((TodoTask?)null);
 
         var result = _sut.Toggle(999);
+
+        Assert.IsType<NotFoundObjectResult>(result);
+    }
+
+    // ── PATCH /api/tasks/{id}/duedate ─────────────────────────────────────────
+
+    [Fact]
+    public void UpdateDueDate_WithValidId_Returns200WithUpdatedTask()
+    {
+        var dueDate = DateTime.UtcNow.AddDays(3);
+        var request = new UpdateDueDateRequest(dueDate);
+        var task = new TodoTask { Id = 1, Title = "Discharge notes", DueDate = dueDate };
+        _mockService.Setup(s => s.UpdateDueDate(1, request.DueDate)).Returns(task);
+
+        var result = _sut.UpdateDueDate(1, request);
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        Assert.Equal(task, ok.Value);
+    }
+
+    [Fact]
+    public void UpdateDueDate_WithInvalidId_Returns404()
+    {
+        _mockService.Setup(s => s.UpdateDueDate(999, null)).Returns((TodoTask?)null);
+
+        var result = _sut.UpdateDueDate(999, new UpdateDueDateRequest(null));
 
         Assert.IsType<NotFoundObjectResult>(result);
     }

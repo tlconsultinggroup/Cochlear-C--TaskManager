@@ -67,6 +67,16 @@ public class TaskServiceTests
         Assert.InRange(task.CreatedAt, before, after);
     }
 
+    [Fact]
+    public void Create_WithDueDate_SetsDueDate()
+    {
+        var dueDate = DateTime.UtcNow.AddDays(2);
+
+        var task = _sut.Create("Task with due date", dueDate);
+
+        Assert.Equal(dueDate, task.DueDate);
+    }
+
     // ── GetById ───────────────────────────────────────────────────────────────
 
     [Fact]
@@ -138,6 +148,39 @@ public class TaskServiceTests
     public void UpdateCompleted_WithInvalidId_ReturnsNull()
     {
         var result = _sut.UpdateCompleted(999, true);
+
+        Assert.Null(result);
+    }
+
+    // ── UpdateDueDate ──────────────────────────────────────────────────────────
+
+    [Fact]
+    public void UpdateDueDate_WithValidId_UpdatesDueDate()
+    {
+        var task = _sut.Create("Prescription filled");
+        var dueDate = DateTime.UtcNow.AddDays(1);
+
+        var updated = _sut.UpdateDueDate(task.Id, dueDate);
+
+        Assert.NotNull(updated);
+        Assert.Equal(dueDate, updated.DueDate);
+    }
+
+    [Fact]
+    public void UpdateDueDate_WithValidId_AllowsNullDueDate()
+    {
+        var task = _sut.Create("Prescription filled", DateTime.UtcNow.AddDays(1));
+
+        var updated = _sut.UpdateDueDate(task.Id, null);
+
+        Assert.NotNull(updated);
+        Assert.Null(updated.DueDate);
+    }
+
+    [Fact]
+    public void UpdateDueDate_WithInvalidId_ReturnsNull()
+    {
+        var result = _sut.UpdateDueDate(999, DateTime.UtcNow.AddDays(1));
 
         Assert.Null(result);
     }
